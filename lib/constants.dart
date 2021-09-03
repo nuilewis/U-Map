@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 ///Colours
 
-const Color cPrimaryColor = Color(0xFFFFFFFF);
-const Color cPrimaryColorLight = Color(0xFFFFFFFF);
-const Color cSecondaryColor = Color(0xFFFFFFFF);
-const Color cSecondaryColorLight = Color(0xFFFFFFFF);
+const Color cPrimaryColor = Color(0xFFC8C3FF);
+const Color cPrimaryColorLight = Color(0xFFC8C3FF);
+//const Color cSecondaryColor = Color(0xFFFFFFFF);
+//const Color cSecondaryColorLight = Color(0xFFFFFFFF);
 
 ///Icon Colours
 
