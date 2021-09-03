@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1053709388566",
+    "project_id": "umap-ebe11",
+    "storage_bucket": "umap-ebe11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053709388566:android:499c2a653baac401519e37",
+        "android_client_info": {
+          "package_name": "com.umap.u_map"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1053709388566-pbjokh4km7d8opdhte1luun4n3ok58t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-Q-sxFZNSSzPZnDQw7_jMac4gPTgzq2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053709388566-pbjokh4km7d8opdhte1luun4n3ok58t9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
