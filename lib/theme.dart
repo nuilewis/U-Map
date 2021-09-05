@@ -9,7 +9,7 @@ ThemeData lightThemeData(BuildContext context) {
   return ThemeData(
       appBarTheme: appBarTheme,
       primaryColor: cPrimaryColor,
-      accentColor: cPrimaryColorLight,
+      accentColor: cLightGrey,
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.light(),
       brightness: Brightness.light,
@@ -18,12 +18,18 @@ ThemeData lightThemeData(BuildContext context) {
       primaryIconTheme: IconThemeData(color: cBlackIconColor),
       fontFamily: 'Poppins',
       textTheme: TextTheme(
-        bodyText1: TextStyle(color: cTextColorBlack),
-        bodyText2: TextStyle(color: cTextColorBlack),
+        bodyText1: TextStyle(
+          color: cTextColorBlack,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyText2: TextStyle(
+          color: cTextColorBlack,
+          fontWeight: FontWeight.normal,
+        ),
         headline1: TextStyle(
-            color: cTextColorBlack, fontSize: 80, fontWeight: FontWeight.bold),
-        headline4: TextStyle(
             color: cTextColorBlack, fontSize: 32, fontWeight: FontWeight.bold),
+        headline2: TextStyle(
+            color: cTextColorBlack, fontSize: 18, fontWeight: FontWeight.bold),
       ));
 }
 
@@ -33,21 +39,27 @@ ThemeData darkThemeData(BuildContext context) {
   return ThemeData(
       appBarTheme: appBarTheme,
       primaryColor: cPrimaryColor,
-      accentColor: cPrimaryColorLight,
+      accentColor: cDarkGrey,
       scaffoldBackgroundColor: Colors.black,
       colorScheme: ColorScheme.dark(),
       brightness: Brightness.dark,
       backgroundColor: Colors.white,
-      iconTheme: IconThemeData(color: cBlackIconColor),
+      iconTheme: IconThemeData(color: cLightIconColor),
       primaryIconTheme: IconThemeData(color: cLightIconColor),
       fontFamily: 'Poppins',
       textTheme: TextTheme(
-        bodyText1: TextStyle(color: cTextColorWhite),
-        bodyText2: TextStyle(color: cTextColorWhite),
+        bodyText1: TextStyle(
+          color: cTextColorWhite,
+          fontWeight: FontWeight.bold,
+        ),
+        bodyText2: TextStyle(
+          color: cTextColorWhite,
+          fontWeight: FontWeight.normal,
+        ),
         headline1: TextStyle(
-            color: cTextColorWhite, fontSize: 80, fontWeight: FontWeight.bold),
-        headline4: TextStyle(
             color: cTextColorWhite, fontSize: 32, fontWeight: FontWeight.bold),
+        headline2: TextStyle(
+            color: cTextColorWhite, fontSize: 18, fontWeight: FontWeight.bold),
       ));
 }
 
