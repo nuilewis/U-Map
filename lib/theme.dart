@@ -9,6 +9,7 @@ ThemeData lightThemeData(BuildContext context) {
   return ThemeData(
       appBarTheme: appBarTheme,
       primaryColor: cPrimaryColor,
+      primaryColorLight: cPrimaryColorLight,
       accentColor: cLightGrey,
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.light(),
@@ -38,7 +39,8 @@ ThemeData lightThemeData(BuildContext context) {
 ThemeData darkThemeData(BuildContext context) {
   return ThemeData(
       appBarTheme: appBarTheme,
-      primaryColor: cPrimaryColor,
+      primaryColor: cPrimaryColor.withOpacity(.3),
+      primaryColorLight: cPrimaryColorLight.withOpacity(.3),
       accentColor: cDarkGrey,
       scaffoldBackgroundColor: Colors.black,
       colorScheme: ColorScheme.dark(),
