@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:u_map/screens/findscreen/umap_findscreen.dart';
 import 'package:u_map/theme.dart';
-
 import 'screens/homescreen/umap_homescreen.dart';
 
 void main() {
@@ -15,12 +15,14 @@ class UMap extends StatelessWidget {
       title: 'Flutter Demo',
       theme: lightThemeData(context),
       darkTheme: darkThemeData(context),
+      //themeMode: ThemeMode.light,
       themeMode: ThemeMode.dark,
       //theme: darkThemeData(context),
 
       debugShowCheckedModeBanner: false,
 
-      home: UMapHomeScreen(),
+      // home: UMapHomeScreen(),
+      home: UMapFindScreen(),
     );
   }
 }
