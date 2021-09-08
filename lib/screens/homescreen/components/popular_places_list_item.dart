@@ -4,22 +4,22 @@ import 'package:u_map/size_config.dart';
 
 class PopularPlacesListItem extends StatelessWidget {
   final String title;
-  final String imageSrc;
+  final String? imageSrc;
 
-  const PopularPlacesListItem({Key key, @required this.title, this.imageSrc})
+  const PopularPlacesListItem({Key? key, required this.title, this.imageSrc})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
     //Popular place list item
     return Container(
-      margin: EdgeInsets.only(left: getRelativeScreenWidth(20), right: 0),
-      width: getRelativeScreenWidth(150),
-      height: getRelativeScreenHeight(240),
+      margin:
+          EdgeInsets.only(left: getRelativeScreenWidth(context, 20), right: 0),
+      width: getRelativeScreenWidth(context, 150),
+      height: getRelativeScreenHeight(context, 240),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(
-          getRelativeScreenWidth(30),
+          getRelativeScreenWidth(context, 30),
         ),
         //   image: DecorationImage(
         //     image: NetworkImage(imagesrc),
@@ -28,7 +28,7 @@ class PopularPlacesListItem extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            bottom: getRelativeScreenHeight(15),
+            bottom: getRelativeScreenHeight(context, 15),
             child: Row(
               children: [
                 Padding(

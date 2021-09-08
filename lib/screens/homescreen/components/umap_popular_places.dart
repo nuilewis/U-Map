@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:u_map/screens/homescreen/components/popular_places_list_item.dart';
 import 'package:u_map/size_config.dart';
 
 class PopularPlaces extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
+    //SizeConfig().init(context);
 
     ///Draggable Scrollable Sheet
     return DraggableScrollableSheet(
@@ -19,16 +18,16 @@ class PopularPlaces extends StatelessWidget {
           controller: scrollController,
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor),
+              // border: Border.all(color: Theme.of(context).primaryColor),
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(getRelativeScreenWidth(32)),
+                  top: Radius.circular(getRelativeScreenWidth(context, 32)),
                   bottom: Radius.zero),
             ),
 
             //color: Colors.white,
-            width: SizeConfig.screenWidth,
-            height: SizeConfig.screenHeight * .55,
+            width: SizeConfig().screenWidth,
+            height: SizeConfig().screenHeight * .55,
             child: Stack(
               children: [
                 ///Draggable icon indicator
@@ -37,8 +36,8 @@ class PopularPlaces extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Container(
-                      height: getRelativeScreenHeight(5),
-                      width: getRelativeScreenWidth(40),
+                      height: getRelativeScreenHeight(context, 5),
+                      width: getRelativeScreenWidth(context, 40),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(5)),
                         color: Theme.of(context).accentColor,
@@ -54,8 +53,8 @@ class PopularPlaces extends StatelessWidget {
                     //Popular Places Text
                     Padding(
                       padding: EdgeInsets.only(
-                        top: getRelativeScreenHeight(30),
-                        left: getRelativeScreenWidth(20),
+                        top: getRelativeScreenHeight(context, 30),
+                        left: getRelativeScreenWidth(context, 20),
                       ),
                       child: Text(
                         "Popular Places",
@@ -64,7 +63,7 @@ class PopularPlaces extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      height: getRelativeScreenHeight(30),
+                      height: getRelativeScreenHeight(context, 30),
                     ),
 
                     // ListView.builder(

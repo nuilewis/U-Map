@@ -7,17 +7,20 @@ class UMapSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Container(
-      width: getRelativeScreenWidth(250),
-      height: getRelativeScreenHeight(60),
+      width: getRelativeScreenWidth(context, 250),
+      height: getRelativeScreenHeight(context, 60),
       padding: EdgeInsets.only(
-        top: getRelativeScreenWidth(2),
-        left: getRelativeScreenWidth(15),
+        top: getRelativeScreenWidth(context, 2),
+        left: getRelativeScreenWidth(context, 15),
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).accentColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
+        //color: Theme.of(context).accentColor,
         borderRadius: BorderRadius.circular(
-          getRelativeScreenWidth(15),
+          getRelativeScreenWidth(context, 15),
         ),
+        border: Border.all(
+            color: Theme.of(context).primaryColorLight.withOpacity(.5)),
       ),
       child: TextField(
         decoration: InputDecoration(

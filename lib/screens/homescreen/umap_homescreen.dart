@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:u_map/screens/homescreen/components/umap_maps.dart';
+import 'package:u_map/screens/homescreen/components/umap_top_search_area.dart';
 import 'package:u_map/size_config.dart';
-
 import 'components/umap_popular_places.dart';
-import 'components/umap_searchbar.dart';
 
 class UMapHomeScreen extends StatefulWidget {
   @override
@@ -33,31 +32,9 @@ class _UMapHomeScreenState extends State<UMapHomeScreen> {
       body: SafeArea(
         child: Stack(
           children: [
+            UmapMaps(),
+            UmapTopSearchMenu(),
             PopularPlaces(),
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                getRelativeScreenWidth(20),
-                getRelativeScreenHeight(60),
-                getRelativeScreenWidth(15),
-                0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  UMapSearchBar(),
-                  SizedBox(
-                    width: getRelativeScreenWidth(20),
-                  ),
-                  IconButton(
-                    icon: SvgPicture.asset(
-                      "assets/svg/menu_icon.svg",
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),
