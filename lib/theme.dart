@@ -7,31 +7,32 @@ import 'constants.dart';
 
 ThemeData lightThemeData(BuildContext context) {
   return ThemeData(
-      appBarTheme: appBarTheme,
-      primaryColor: cPrimaryColor,
-      primaryColorLight: cPrimaryColorLight,
-      accentColor: cLightGrey,
-      scaffoldBackgroundColor: Colors.white,
-      colorScheme: ColorScheme.light(),
-      brightness: Brightness.light,
-      backgroundColor: Colors.white,
-      iconTheme: IconThemeData(color: cBlackIconColor),
-      primaryIconTheme: IconThemeData(color: cBlackIconColor),
-      fontFamily: 'Poppins',
-      textTheme: TextTheme(
-        bodyText1: TextStyle(
-          color: cTextColorBlack,
-          fontWeight: FontWeight.bold,
-        ),
-        bodyText2: TextStyle(
-          color: cTextColorBlack,
-          fontWeight: FontWeight.normal,
-        ),
-        headline1: TextStyle(
-            color: cTextColorBlack, fontSize: 32, fontWeight: FontWeight.bold),
-        headline2: TextStyle(
-            color: cTextColorBlack, fontSize: 18, fontWeight: FontWeight.bold),
-      ));
+    appBarTheme: appBarTheme,
+    primaryColor: cPrimaryColor,
+    primaryColorLight: cPrimaryColorLight,
+    accentColor: cLightGrey,
+    scaffoldBackgroundColor: Colors.white,
+    colorScheme: ColorScheme.light(),
+    brightness: Brightness.light,
+    backgroundColor: Colors.white,
+    iconTheme: IconThemeData(color: cBlackIconColor),
+    primaryIconTheme: IconThemeData(color: cBlackIconColor),
+    fontFamily: 'Poppins',
+    textTheme: TextTheme(
+      bodyText1: TextStyle(
+        color: cTextColorBlack,
+        fontWeight: FontWeight.bold,
+      ),
+      bodyText2: TextStyle(
+        color: cTextColorBlack,
+        fontWeight: FontWeight.normal,
+      ),
+      headline1: TextStyle(
+          color: cTextColorBlack, fontSize: 32, fontWeight: FontWeight.bold),
+      headline2: TextStyle(
+          color: cTextColorBlack, fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+  );
 }
 
 ///Dark Theme

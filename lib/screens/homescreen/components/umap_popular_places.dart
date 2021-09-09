@@ -7,10 +7,13 @@ import 'package:u_map/size_config.dart';
 class PopularPlaces extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     //SizeConfig().init(context);
 
     ///Draggable Scrollable Sheet
     return DraggableScrollableSheet(
+      initialChildSize: .2,
       maxChildSize: .6,
       minChildSize: .2,
       builder: (context, scrollController) {
@@ -26,8 +29,8 @@ class PopularPlaces extends StatelessWidget {
             ),
 
             //color: Colors.white,
-            width: SizeConfig().screenWidth,
-            height: SizeConfig().screenHeight * .55,
+            width: screenWidth,
+            height: screenHeight * .55,
             child: Stack(
               children: [
                 ///Draggable icon indicator
