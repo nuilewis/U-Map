@@ -20,8 +20,8 @@ class UMap extends StatelessWidget {
       title: 'Flutter Demo',
       theme: lightThemeData(context),
       darkTheme: darkThemeData(context),
-      //themeMode: ThemeMode.light,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
+      //themeMode: ThemeMode.dark,
 
       debugShowCheckedModeBanner: false,
 
