@@ -4,21 +4,21 @@ import 'package:flutter_svg/svg.dart';
 import '../../../size_config.dart';
 
 class UmapListItem extends StatelessWidget {
-  final String? title;
-  final String? description;
+  final String title;
+  final String description;
   final String? imgSrc;
-  final String? firstIconSvgLink;
-  final String? secondIconSvgLink;
+  final String firstIconSvgLink;
+  final String secondIconSvgLink;
   final VoidCallback? firstIconOnPressed;
   final VoidCallback? secondIconOnPressed;
 
   const UmapListItem({
     Key? key,
-    @required this.title,
-    @required this.description,
-    @required this.imgSrc,
-    @required this.firstIconSvgLink,
-    this.secondIconSvgLink,
+    required this.title,
+    required this.description,
+    this.imgSrc,
+    required this.firstIconSvgLink,
+    required this.secondIconSvgLink,
     this.firstIconOnPressed,
     this.secondIconOnPressed,
   }) : super(key: key);
@@ -51,11 +51,11 @@ class UmapListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title!,
+                    title,
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   Text(
-                    description!,
+                    description,
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
                   Row(
@@ -63,7 +63,7 @@ class UmapListItem extends StatelessWidget {
                       Spacer(),
                       IconButton(
                         icon: SvgPicture.asset(
-                          firstIconSvgLink!,
+                          firstIconSvgLink,
                           color: Theme.of(context).iconTheme.color,
                           //color: Colors.black,
                         ),
@@ -71,7 +71,7 @@ class UmapListItem extends StatelessWidget {
                       ),
                       IconButton(
                         icon: SvgPicture.asset(
-                          secondIconSvgLink!,
+                          secondIconSvgLink,
                           color: Theme.of(context).iconTheme.color,
                           //color: Colors.black,
                         ),
