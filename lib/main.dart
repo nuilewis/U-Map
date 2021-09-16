@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:u_map/screens/findscreen/umap_findscreen.dart';
 import 'package:u_map/screens/locationDetailsScreen/umap_location_details.dart';
+import 'package:u_map/screens/savedscreen/umap_savedscreen.dart';
 import 'package:u_map/theme.dart';
 import 'screens/homescreen/umap_homescreen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,8 +26,9 @@ class UMap extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
 
-      home: UMapHomeScreen(),
-      //home: UMapFindScreen(),
+      //home: UMapHomeScreen(),
+      home: UMapFindScreen(),
+      //home: UMapSavedScreen(),
       //home: UmapLocationDetails(),
     );
   }
