@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:u_map/size_config.dart';
 
-class UmapFireStoreError extends StatelessWidget {
-  final String firebaseErrorDetails;
-  final String firebaseErrorMsg;
+class UmapErrorScreen extends StatelessWidget {
+  final String errorDetails;
+  final String errorMessage;
 
-  const UmapFireStoreError(
-      {Key? key,
-      required this.firebaseErrorDetails,
-      required this.firebaseErrorMsg})
+  const UmapErrorScreen(
+      {Key? key, required this.errorDetails, required this.errorMessage})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -31,7 +29,7 @@ class UmapFireStoreError extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                firebaseErrorMsg,
+                errorMessage,
                 style: Theme.of(context).textTheme.headline1,
               ),
               SizedBox(
@@ -41,7 +39,7 @@ class UmapFireStoreError extends StatelessWidget {
                 padding: EdgeInsets.symmetric(
                     horizontal: getRelativeScreenWidth(context, 30)),
                 child: Text(
-                  firebaseErrorDetails,
+                  errorDetails,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
