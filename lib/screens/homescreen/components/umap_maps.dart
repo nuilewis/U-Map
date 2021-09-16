@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:u_map/components/umap_directions/directions_model.dart';
 import 'package:u_map/components/umap_location/umap_location.dart';
 import 'package:u_map/components/umap_location/umap_permissions.dart';
-import 'package:u_map/screens/homescreen/components/firebase_error_screen.dart';
+import 'file:///C:/Users/Lewis/AndroidStudioProjects/u-map/lib/screens/errorscreen/firebase_error_screen.dart';
 import 'package:u_map/screens/homescreen/components/umap_icon_button.dart';
 import 'package:u_map/screens/locationDetailsScreen/umap_location_details.dart';
 import 'package:u_map/size_config.dart';
@@ -27,6 +28,8 @@ class _UmapMapsState extends State<UmapMaps> {
   LatLng? currentLocation;
   LatLng? markerLocation;
   LatLng _lastMapPosition = _center;
+  Directions? directionInfo;
+  Directions? directionFromGoogle;
 
   Set<Marker> setMarkers() {
     return uMapMarkers;
@@ -100,9 +103,8 @@ class _UmapMapsState extends State<UmapMaps> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UmapFireStoreError(
-                    firebaseErrorDetails: "${snapshot.error}",
-                    firebaseErrorMsg: "Ooops!"),
+                builder: (context) => UmapErrorScreen(
+                    errorDetails: "${snapshot.error}", errorMessage: "Ooops!"),
               ),
             );
           });
@@ -147,8 +149,7 @@ class _UmapMapsState extends State<UmapMaps> {
                   position: markerLocation!,
                   infoWindow: InfoWindow(title: snapshot.data!.docs[i]["name"]),
                   onTap: () async {
-                    //directionInfo = await
-                    Navigator.push(
+                    directionFromGoogle = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => UmapLocationDetails(
@@ -158,12 +159,14 @@ class _UmapMapsState extends State<UmapMaps> {
                         ),
                       ),
                     );
+
+                    setState(() {
+                      directionInfo = directionFromGoogle;
+                    });
                   },
                 ),
               );
             }
-
-          ///TODO: Write what to do when theres internet
         }
         return GoogleMap(
           initialCameraPosition: CameraPosition(
@@ -174,7 +177,22 @@ class _UmapMapsState extends State<UmapMaps> {
           markers: setMarkers(),
           onCameraMove: _onCameraMove,
           myLocationEnabled: true,
-          polylines: {},
+          polylines: {
+            if (directionInfo != null)
+              Polyline(
+                geodesic: true,
+                polylineId: const PolylineId('overview_polyline'),
+                color: Theme.of(context).primaryColor,
+                width: 6,
+                zIndex: 1,
+                endCap: Cap.roundCap,
+                startCap: Cap.roundCap,
+                jointType: JointType.bevel,
+                points: directionInfo!.polylinePoints
+                    .map((e) => LatLng(e.latitude, e.longitude))
+                    .toList(),
+              ),
+          },
         );
       },
     );
