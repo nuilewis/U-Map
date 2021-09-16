@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:u_map/components/umap_directions/directions_model.dart';
+import 'package:u_map/components/umap_directions/get_directions_method.dart';
+import 'package:u_map/components/umap_shared_preferences/umap_shared_preferences.dart';
+import 'package:u_map/components/umap_shared_preferences/umap_sp_methods.dart';
 import 'package:u_map/screens/homescreen/components/umap_icon_button.dart';
 import 'package:u_map/size_config.dart';
 
 import 'components/location_details_description.dart';
+import 'components/umap_text_button.dart';
 
 class UmapLocationDetails extends StatefulWidget {
   final String name;
@@ -25,6 +31,27 @@ class UmapLocationDetails extends StatefulWidget {
 }
 
 class _UmapLocationDetailsState extends State<UmapLocationDetails> {
+  LatLng? currentLocation = LatLng(6.002342, 10.264345);
+  late final Directions? directionInfo;
+  double? calcdistance;
+  bool isSaved = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initUmapSharedPreferences();
+    checkIsSaved();
+  }
+
+  void checkIsSaved() {
+    for (int i = 0; i < umapSPList.length; i++) {
+      if (umapSPList[i].savedName == widget.name) {
+        isSaved = true;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -140,41 +167,68 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                   ),
 
                   ///Add to  and remove from saved Button
-                  UmapIconButton(
-                    iconLink: "assets/svg/heart_icon.svg",
-                    onPressed: () {},
-                    bgColor: Theme.of(context).primaryColorLight,
-                  ),
+                  isSaved
+                      ? UmapIconButton(
+                          iconLink: "assets/svg/heart_icon_filled.svg",
+                          iconColor: Colors.white,
+                          onPressed: () {
+                            setState(() {
+                              removeFromSavedList(
+                                  UmapSaved(
+                                    savedName: widget.name,
+                                    savedDescription: widget.description,
+                                    // savedDistance:
+                                    //     calcdistance!.toStringAsFixed(2),
+                                    savedDistance: "1.23km",
+                                    savedLocationLatitude: widget
+                                        .markerLocation.latitude
+                                        .toDouble(),
+                                    savedLocationLongitude: widget
+                                        .markerLocation.longitude
+                                        .toDouble(),
+                                  ),
+                                  widget.name);
 
-                  ///Get Directions Button
-                  Container(
-                    height: getRelativeScreenWidth(context, 60),
-                    width: getRelativeScreenWidth(context, 150),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(
-                        getRelativeScreenWidth(context, 20),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Get Directions",
-                          style: Theme.of(context).textTheme.bodyText2,
+                              isSaved = false;
+                            });
+                          },
+                          bgColor: Theme.of(context).primaryColor,
+                        )
+                      : UmapIconButton(
+                          iconLink: "assets/svg/heart_icon.svg",
+                          onPressed: () {
+                            setState(() {
+                              addToSavedList(
+                                UmapSaved(
+                                  savedName: widget.name,
+                                  savedDescription: widget.description,
+                                  //savedDistance: calcdistance!.toStringAsFixed(2),
+                                  savedDistance: "1.23km",
+                                  savedLocationLatitude:
+                                      widget.markerLocation.latitude.toDouble(),
+                                  savedLocationLongitude: widget
+                                      .markerLocation.longitude
+                                      .toDouble(),
+                                ),
+                              );
+                              isSaved = true;
+                            });
+                          },
+                          bgColor: Colors.transparent,
                         ),
-                        SizedBox(
-                          width: getRelativeScreenWidth(context, 5),
-                        ),
-                        SvgPicture.asset(
-                          "assets/svg/direction_icon.svg",
-                          color: Theme.of(context).iconTheme.color,
-                          //height: 20,
-                        ),
-                      ],
-                    ),
-                  )
+
+                  UmapTextButton(
+                      buttonText: "Get Directions",
+                      buttonIconLink: "assets/svg/direction_icon.svg",
+                      onPressed: () async {
+                        Feedback.forTap(context);
+                        HapticFeedback.lightImpact();
+                        directionInfo = await getDirections(
+                            currentLocation!, widget.markerLocation);
+                        Future.delayed(Duration(seconds: 1), () {
+                          Navigator.pop(context, directionInfo);
+                        });
+                      })
                 ],
               ),
             ),
