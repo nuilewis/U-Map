@@ -1,7 +1,8 @@
 class UmapSaved {
   String savedName;
   String savedDescription;
-  String savedDistance;
+  String? savedDistance;
+  String savedImgUrl;
   double savedLocationLatitude;
   double savedLocationLongitude;
   //bool savedisSaved;
@@ -9,9 +10,10 @@ class UmapSaved {
   UmapSaved({
     required this.savedName,
     required this.savedDescription,
-    required this.savedDistance,
+    this.savedDistance,
     required this.savedLocationLatitude,
     required this.savedLocationLongitude,
+    required this.savedImgUrl,
     // this.savedisSaved,
   });
 
@@ -21,6 +23,7 @@ class UmapSaved {
             'Name'], // assigning ths SavedID from the constructor to the 'Name' property/Variable of our map
         this.savedDescription = map['Description'],
         this.savedDistance = map['Distance'],
+        this.savedImgUrl = map['ImageUrl'],
         this.savedLocationLatitude = map['LocationLat'],
         this.savedLocationLongitude = map['LocationLong'];
 
@@ -29,7 +32,8 @@ class UmapSaved {
     return {
       'Name': this.savedName,
       'Description': this.savedDescription,
-      'Distance': this.savedDistance,
+      'Distance': this.savedDistance ?? "N/A Km",
+      'ImageUrl': this.savedImgUrl,
       'LocationLat': this.savedLocationLatitude,
       'LocationLong': this.savedLocationLongitude,
       // 'isSaved': this.savedisSaved,

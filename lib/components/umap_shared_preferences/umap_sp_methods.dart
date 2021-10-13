@@ -14,13 +14,14 @@ initUmapSharedPreferences() async {
 }
 
 ///methods to add, remove, store and load data into a json list
-void addToSavedList(UmapSaved savedItem) {
+void addToSavedList({required UmapSaved savedItem}) {
   umapSPList.add(savedItem);
   //setState(() {});
   saveSPData();
 }
 
-void removeFromSavedList(UmapSaved savedItem, locationName) {
+void removeFromSavedList(
+    {required UmapSaved savedItem, required String locationName}) {
   umapSPList.removeWhere((savedItem) => savedItem.savedName == locationName);
   if (umapSPList.isEmpty)
     //setState(() {});
