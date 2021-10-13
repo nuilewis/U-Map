@@ -10,9 +10,7 @@ ThemeData lightThemeData(BuildContext context) {
     appBarTheme: appBarTheme,
     primaryColor: cPrimaryColor,
     primaryColorLight: cPrimaryColorLight,
-    accentColor: cLightGrey,
     scaffoldBackgroundColor: Colors.white,
-    colorScheme: ColorScheme.light(),
     brightness: Brightness.light,
     backgroundColor: Colors.white,
     iconTheme: IconThemeData(color: cBlackIconColor),
@@ -28,10 +26,11 @@ ThemeData lightThemeData(BuildContext context) {
         fontWeight: FontWeight.normal,
       ),
       headline1: TextStyle(
-          color: cTextColorBlack, fontSize: 32, fontWeight: FontWeight.bold),
+          color: cTextColorBlack, fontSize: 28, fontWeight: FontWeight.bold),
       headline2: TextStyle(
           color: cTextColorBlack, fontSize: 18, fontWeight: FontWeight.bold),
     ),
+    colorScheme: ColorScheme.light().copyWith(secondary: cLightGrey),
   );
 }
 
@@ -42,9 +41,7 @@ ThemeData darkThemeData(BuildContext context) {
       appBarTheme: appBarTheme,
       primaryColor: cPrimaryColor.withOpacity(.3),
       primaryColorLight: cPrimaryColorLight.withOpacity(.3),
-      accentColor: cDarkGrey,
       scaffoldBackgroundColor: Colors.black,
-      colorScheme: ColorScheme.dark(),
       brightness: Brightness.dark,
       backgroundColor: Colors.white,
       iconTheme: IconThemeData(color: cLightIconColor),
@@ -60,10 +57,15 @@ ThemeData darkThemeData(BuildContext context) {
           fontWeight: FontWeight.normal,
         ),
         headline1: TextStyle(
-            color: cTextColorWhite, fontSize: 32, fontWeight: FontWeight.bold),
+            color: cTextColorWhite, fontSize: 28, fontWeight: FontWeight.bold),
         headline2: TextStyle(
             color: cTextColorWhite, fontSize: 18, fontWeight: FontWeight.bold),
-      ));
+      ),
+      colorScheme: ColorScheme.dark().copyWith(secondary: cDarkGrey));
 }
 
-AppBarTheme appBarTheme = AppBarTheme(color: Colors.transparent, elevation: 0);
+AppBarTheme appBarTheme = AppBarTheme(
+  backgroundColor: Colors.transparent,
+  foregroundColor: Colors.transparent,
+  elevation: 0,
+);

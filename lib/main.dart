@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:u_map/screens/findscreen/umap_findscreen.dart';
-import 'package:u_map/screens/locationDetailsScreen/umap_location_details.dart';
-import 'package:u_map/screens/savedscreen/umap_savedscreen.dart';
+import 'package:u_map/screens/navigationscreen/umap_navscreen.dart';
 import 'package:u_map/theme.dart';
-import 'screens/homescreen/umap_homescreen.dart';
+import 'components/umap_bottom_nav_bar/umap_bottom_nav_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -18,18 +16,19 @@ class UMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: lightThemeData(context),
-      darkTheme: darkThemeData(context),
-      themeMode: ThemeMode.light,
-      //themeMode: ThemeMode.dark,
-
-      debugShowCheckedModeBanner: false,
-
-      //home: UMapHomeScreen(),
-      home: UMapFindScreen(),
-      //home: UMapSavedScreen(),
-      //home: UmapLocationDetails(),
-    );
+        title: 'Flutter Demo',
+        theme: lightThemeData(context),
+        darkTheme: darkThemeData(context),
+        //themeMode: ThemeMode.light,
+        themeMode: ThemeMode.dark,
+        debugShowCheckedModeBanner: false,
+        //home: UMapHomeScreen(),
+        // home: UMapFindScreen(),
+        //home: UMapBottomNavBar(),
+        home: UMapNavigationScreen(
+            name: 'null', description: 'null', directionInfo: null)
+        //home: UMapSavedScreen(),
+        //home: UmapLocationDetails(),
+        );
   }
 }
