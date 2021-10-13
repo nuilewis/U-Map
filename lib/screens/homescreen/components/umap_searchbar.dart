@@ -1,8 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:u_map/size_config.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UMapSearchBar extends StatelessWidget {
+class UMapSearchBar extends StatefulWidget {
+  @override
+  _UMapSearchBarState createState() => _UMapSearchBarState();
+}
+
+class _UMapSearchBarState extends State<UMapSearchBar> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -33,6 +40,7 @@ class UMapSearchBar extends StatelessWidget {
               onPressed: () {},
             ),
             hintText: "Search",
+
             //hintTextDirection: TextDirection.rtl,
             border: InputBorder.none),
         //textDirection: TextDirection.rtl,
