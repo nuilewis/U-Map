@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
+import 'package:u_map/components/umapDrawer.dart';
 import 'package:u_map/components/umap_location/umap_permissions.dart';
 import 'package:u_map/screens/homescreen/components/umap_maps.dart';
-import 'package:u_map/screens/homescreen/components/umap_top_search_area.dart';
+import 'package:u_map/screens/homescreen/components/umap_app_bar.dart';
 import 'package:u_map/screens/permissionscreens/umapPermissionScreen.dart';
 import 'package:u_map/size_config.dart';
+import 'components/umap_categories.dart';
 import 'components/umap_popular_places.dart';
 
 class UMapHomeScreen extends StatefulWidget {
@@ -80,6 +82,7 @@ class _UMapHomeScreenState extends State<UMapHomeScreen> {
     SizeConfig().init(context);
 
     return Scaffold(
+      appBar: UmapAppBar(),
       extendBodyBehindAppBar: true,
       //backgroundColor: Colors.white70,
       // appBar: AppBar(
@@ -94,14 +97,20 @@ class _UMapHomeScreenState extends State<UMapHomeScreen> {
       //     ),
       //   ],
       // ),
-
-      body: SafeArea(
-        child: Stack(
-          children: [
-            UmapMaps(),
-            UmapTopSearchMenu(),
-            PopularPlaces(),
-          ],
+      endDrawer: UmapDrawer(),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // UmapMaps(),
+              PopularPlaces(),
+              SizedBox(
+                height: getRelativeScreenHeight(context, 35),
+              ),
+              UmapCategories(),
+            ],
+          ),
         ),
       ),
     );
