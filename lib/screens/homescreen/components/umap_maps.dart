@@ -13,6 +13,11 @@ import 'dart:async';
 import 'package:location/location.dart';
 
 class UmapMaps extends StatefulWidget {
+  final Directions? directionInformation;
+
+  const UmapMaps({Key? key, required this.directionInformation})
+      : super(key: key);
+
   @override
   _UmapMapsState createState() => _UmapMapsState();
 }
@@ -37,6 +42,8 @@ class _UmapMapsState extends State<UmapMaps> {
 
   @override
   initState() {
+    //Initialising direction Info
+    directionInfo = widget.directionInformation;
     super.initState();
   }
 
@@ -104,7 +111,10 @@ class _UmapMapsState extends State<UmapMaps> {
               context,
               MaterialPageRoute(
                 builder: (context) => UmapErrorScreen(
-                    errorDetails: "${snapshot.error}", errorMessage: "Ooops!"),
+                  errorDetails: "${snapshot.error}",
+                  errorMessage: "Ooops!",
+                  showBackButton: true,
+                ),
               ),
             );
           });
@@ -119,7 +129,7 @@ class _UmapMapsState extends State<UmapMaps> {
                 backgroundColor: Colors.transparent,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   Theme.of(context).iconTheme.color ??
-                      Theme.of(context).accentColor,
+                      Theme.of(context).colorScheme.secondary,
                 ),
               ),
             );
@@ -153,6 +163,7 @@ class _UmapMapsState extends State<UmapMaps> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => UmapLocationDetails(
+                          imgSrc: snapshot.data!.docs[i]["imageUrl"],
                           name: snapshot.data!.docs[i]["name"],
                           description: snapshot.data!.docs[i]["description"],
                           markerLocation: markerLocation!,

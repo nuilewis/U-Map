@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:u_map/components/umapDrawer.dart';
 import 'package:u_map/components/umap_directions/directions_model.dart';
 import 'package:u_map/components/umap_directions/get_directions_method.dart';
+import 'package:u_map/components/umap_location/umap_location.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_shared_preferences.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_sp_methods.dart';
 import 'package:u_map/screens/homescreen/components/umap_icon_button.dart';
+import 'package:u_map/screens/navigationscreen/umap_navscreen.dart';
 import 'package:u_map/size_config.dart';
 
 import 'components/location_details_description.dart';
@@ -16,14 +20,14 @@ import 'components/umap_text_button.dart';
 class UmapLocationDetails extends StatefulWidget {
   final String name;
   final String description;
-  final String? imgSrc;
+  final String imgSrc;
   final LatLng markerLocation;
 
   const UmapLocationDetails(
       {Key? key,
       required this.name,
       required this.description,
-      this.imgSrc,
+      required this.imgSrc,
       required this.markerLocation})
       : super(key: key);
   @override
@@ -31,9 +35,11 @@ class UmapLocationDetails extends StatefulWidget {
 }
 
 class _UmapLocationDetailsState extends State<UmapLocationDetails> {
-  LatLng? currentLocation = LatLng(6.002342, 10.264345);
+  ///Todo: Make current location get actual current location
+  //LatLng? currentLocation; = LatLng(6.002342, 10.264345);
+  LatLng? currentLocation;
   late final Directions? directionInfo;
-  double? calcdistance;
+  double? calcDistance;
   bool isSaved = false;
 
   @override
@@ -42,6 +48,13 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
     super.initState();
     initUmapSharedPreferences();
     checkIsSaved();
+  }
+
+  getCurrentLocation() async {
+    LocationData? location = await getLocation();
+
+    ///currentLocation = LatLng(location!.latitude, location!.longitude);
+    return currentLocation;
   }
 
   void checkIsSaved() {
@@ -82,12 +95,13 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                 color: Theme.of(context).iconTheme.color,
               ),
               onPressed: () {
-                Navigator.pop(context);
+                Scaffold.of(context).openEndDrawer();
               },
             ),
           ),
         ],
       ),
+      endDrawer: UmapDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,6 +144,12 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
               width: double.infinity,
               height: MediaQuery.of(context).size.height * .65,
               decoration: BoxDecoration(
+                ///Todo: make it show a loading icon when loading the image
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                      widget.imgSrc,
+                    )),
                 color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(
                   getRelativeScreenWidth(context, 32),
@@ -174,9 +194,10 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                           onPressed: () {
                             setState(() {
                               removeFromSavedList(
-                                  UmapSaved(
+                                  savedItem: UmapSaved(
                                     savedName: widget.name,
                                     savedDescription: widget.description,
+                                    savedImgUrl: widget.imgSrc,
                                     // savedDistance:
                                     //     calcdistance!.toStringAsFixed(2),
                                     savedDistance: "1.23km",
@@ -187,7 +208,7 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                                         .markerLocation.longitude
                                         .toDouble(),
                                   ),
-                                  widget.name);
+                                  locationName: widget.name);
 
                               isSaved = false;
                             });
@@ -199,9 +220,10 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                           onPressed: () {
                             setState(() {
                               addToSavedList(
-                                UmapSaved(
+                                savedItem: UmapSaved(
                                   savedName: widget.name,
                                   savedDescription: widget.description,
+                                  savedImgUrl: widget.imgSrc,
                                   //savedDistance: calcdistance!.toStringAsFixed(2),
                                   savedDistance: "1.23km",
                                   savedLocationLatitude:
@@ -226,7 +248,14 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                         directionInfo = await getDirections(
                             currentLocation!, widget.markerLocation);
                         Future.delayed(Duration(seconds: 1), () {
-                          Navigator.pop(context, directionInfo);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UMapNavigationScreen(
+                                    name: widget.name,
+                                    description: widget.description,
+                                    directionInfo: directionInfo),
+                              ));
                         });
                       })
                 ],
