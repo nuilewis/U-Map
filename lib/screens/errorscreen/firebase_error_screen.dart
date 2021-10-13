@@ -5,25 +5,31 @@ import 'package:u_map/size_config.dart';
 class UmapErrorScreen extends StatelessWidget {
   final String errorDetails;
   final String errorMessage;
+  final bool showBackButton;
 
   const UmapErrorScreen(
-      {Key? key, required this.errorDetails, required this.errorMessage})
+      {Key? key,
+      required this.errorDetails,
+      required this.errorMessage,
+      required this.showBackButton})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-              icon: SvgPicture.asset(
-                "assets/svg/back_icon.svg",
-                color: Theme.of(context).iconTheme.color,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-        ),
+        appBar: showBackButton
+            ? AppBar(
+                backgroundColor: Colors.transparent,
+                leading: IconButton(
+                    icon: SvgPicture.asset(
+                      "assets/svg/back_icon.svg",
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              )
+            : null,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
