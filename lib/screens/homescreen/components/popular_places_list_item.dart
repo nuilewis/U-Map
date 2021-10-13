@@ -5,16 +5,20 @@ import 'package:u_map/size_config.dart';
 
 class PopularPlacesListItem extends StatelessWidget {
   final String title;
-  final String? imageSrc;
+  final String saveIconLink;
+  final String imageSrc;
   final GeoPoint markerGeopoint;
   final VoidCallback? onPressed;
+  final VoidCallback? onSavedPressed;
 
   const PopularPlacesListItem(
       {Key? key,
       required this.title,
+      required this.saveIconLink,
       required this.markerGeopoint,
-      this.imageSrc,
-      this.onPressed})
+      required this.imageSrc,
+      this.onPressed,
+      this.onSavedPressed})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -61,11 +65,11 @@ class PopularPlacesListItem extends StatelessWidget {
                   iconSize: 12,
                   splashColor: Colors.transparent,
                   icon: SvgPicture.asset(
-                    "assets/svg/heart_icon.svg",
+                    saveIconLink,
                     height: 18,
                     color: Theme.of(context).iconTheme.color,
                   ),
-                  onPressed: () {},
+                  onPressed: onSavedPressed,
                 ),
               )
             ],

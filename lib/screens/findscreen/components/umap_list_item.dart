@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../size_config.dart';
 
 class UmapListItem extends StatelessWidget {
   final String title;
   final String description;
-  final String? imgSrc;
+  final String imgSrc;
   final String firstIconSvgLink;
   final String secondIconSvgLink;
-  final VoidCallback? firstIconOnPressed;
-  final VoidCallback? secondIconOnPressed;
+  final VoidCallback firstIconOnPressed;
+  final VoidCallback secondIconOnPressed;
+  final LatLng sourceLocation;
 
   const UmapListItem({
     Key? key,
     required this.title,
     required this.description,
-    this.imgSrc,
+    required this.imgSrc,
     required this.firstIconSvgLink,
     required this.secondIconSvgLink,
-    this.firstIconOnPressed,
-    this.secondIconOnPressed,
+    required this.sourceLocation,
+    required this.firstIconOnPressed,
+    required this.secondIconOnPressed,
   }) : super(key: key);
 
   @override
@@ -91,6 +94,8 @@ class UmapListItem extends StatelessWidget {
               // height: getRelativeScreenHeight(context, 180),
               // width: getRelativeScreenHeight(context, 150),
               decoration: BoxDecoration(
+                image: DecorationImage(
+                    fit: BoxFit.cover, image: NetworkImage(imgSrc)),
                 color: Theme.of(context).primaryColor.withOpacity(.5),
                 borderRadius: BorderRadius.circular(
                   getRelativeScreenWidth(context, 32),
