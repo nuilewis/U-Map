@@ -20,26 +20,27 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
   final Stream<QuerySnapshot> umapAdministrativeFirestoreStream =
       FirebaseFirestore.instance
           .collection("umap_bamenda")
-          .doc("umap_uba")
+          .doc("umap_uba_ref")
           .collection("administrative blocks")
           .snapshots();
   final Stream<QuerySnapshot> umapClassesFirestoreStream = FirebaseFirestore
       .instance
       .collection("umap_bamenda")
-      .doc("umap_uba")
+      .doc("umap_uba_ref")
       .collection("classes")
       .snapshots();
   final Stream<QuerySnapshot> umapOfficesFirestoreStream = FirebaseFirestore
       .instance
       .collection("umap_bamenda")
-      .doc("umap_uba")
+      .doc("umap_uba_ref")
       .collection("offices")
       .snapshots();
   // late final Stream<QuerySnapshot>? umapGlobalFirestoreStream;
+  List<String> category = ["administrative blocks", "classes", "offices"];
   late LatLng markerLoc;
   String? savedIconLink;
   late VoidCallback onSavedPressed;
-  bool isSaved = false;
+  List<bool> isSaved = [];
   double? calcDistance;
 
   @override
@@ -48,60 +49,55 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
     initUmapSharedPreferences();
   }
 
-  Widget buildPopularPlacesList(
-    BuildContext context, {
-    required DocumentSnapshot document,
-  }) {
+  Widget buildPlacesList(BuildContext context,
+      {required DocumentSnapshot document,
+      required String category,
+      required int index}) {
     for (int i = 0; i < umapSPList.length; i++) {
       ///Check if is saved
       if (umapSPList[i].savedName == document["name"]) {
-        isSaved = true;
+        isSaved[index] = true;
       }
     }
     return UmapListItem(
-      title: document["name"],
-      sourceLocation:
-          LatLng(document["location"].latitude, document["location"].longitude),
-      description: document["description"],
-      imgSrc: document["imageUrl"],
-      firstIconSvgLink: isSaved
+      title: document["name"][index],
+      description: document["description"][index],
+      imgSrc: document["imageUrl"][index],
+      firstIconSvgLink: isSaved[index]
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
-      firstIconOnPressed: isSaved
+      firstIconOnPressed: isSaved[index]
           ? () {
               Feedback.forTap(context);
               HapticFeedback.lightImpact();
-              GeoPoint sourceLocation = document["location"];
               setState(() {
                 removeFromSavedList(
                     savedItem: UmapSaved(
-                      savedName: document["name"],
-                      savedDescription: document["description"],
-                      savedImgUrl: document["imageUrl"],
-                      savedLocationLatitude: sourceLocation.latitude.toDouble(),
-                      savedLocationLongitude:
-                          sourceLocation.latitude.toDouble(),
+                      savedCategory: category,
+                      savedName: document["name"][index],
+                      savedID: document["id"][index],
+                      savedDescription: document["description"][index],
+                      savedImgUrl: document["imageUrl"][index],
                     ),
-                    locationName: document["name"]);
-                isSaved = false;
+                    locationID: document.id);
+                isSaved[index] = false;
               });
             }
           : () {
               Feedback.forTap(context);
               HapticFeedback.lightImpact();
-              GeoPoint sourceLocation = document["location"];
               setState(() {
                 addToSavedList(
                   savedItem: UmapSaved(
-                    savedName: document["name"],
-                    savedDescription: document["description"],
-                    savedImgUrl: document["imageUrl"],
-                    savedLocationLatitude: sourceLocation.latitude.toDouble(),
-                    savedLocationLongitude: sourceLocation.longitude.toDouble(),
+                    savedCategory: category,
+                    savedName: document["name"][index],
+                    savedID: document["id"][index],
+                    savedDescription: document["description"][index],
+                    savedImgUrl: document["imageUrl"][index],
                   ),
                 );
 
-                isSaved = true;
+                isSaved[index] = true;
               });
             },
       secondIconSvgLink: "assets/svg/forward_icon.svg",
@@ -110,11 +106,9 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
-              name: document["name"],
-              description: document["description"],
-              markerLocation: LatLng(document["location"].latitude,
-                  document["location"].longitude),
-              imgSrc: document["imageUrl"],
+              category: category,
+              imgSrc: document["imageUrl"][index],
+              documentID: document["id"][index],
             ),
           ),
         );
@@ -135,12 +129,16 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            SizedBox(
+              height: getRelativeScreenHeight(context, 60),
+            ),
+
             ///Administrative blocks Stream
             Padding(
               padding: EdgeInsets.all(getRelativeScreenWidth(context, 20)),
               child: Text(
-                "Administrative Blocks",
-                style: Theme.of(context).textTheme.headline2,
+                "Administrative\nBlocks",
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
             StreamBuilder(
@@ -160,30 +158,36 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
                       ),
                     );
                   default:
-                    List<DocumentSnapshot> umapSourceDocuments =
-                        snapshot.data!.docs;
-                    if (umapSourceDocuments.length == 0) {
+                    DocumentSnapshot umapSourceDocuments =
+                        snapshot.data!.docs[0];
+
+                    ///Index of 0 because there is only 1 document in the collection
+
+                    if (umapSourceDocuments["id"].isEmpty) {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            "Oh, there doesn't seem to be anything under this category",
-                            textAlign: TextAlign.left,
+                            "Oh, we can't find anything under this category",
+                            textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
                       );
                     } else {
                       return ListView.builder(
+                          padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemExtent: getRelativeScreenHeight(context, 195),
-                          itemCount: umapSourceDocuments.length,
+                          itemCount: umapSourceDocuments["id"].length,
                           itemBuilder: (context, index) {
-                            return buildPopularPlacesList(
-                              context,
-                              document: umapSourceDocuments[index],
-                            );
+                            isSaved.add(false);
+
+                            return buildPlacesList(context,
+                                document: umapSourceDocuments,
+                                index: index,
+                                category: "administrative blocks");
                           });
                     }
                 }
@@ -192,13 +196,13 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
 
             ///Offices blocks Stream
             SizedBox(
-              height: getRelativeScreenHeight(context, 10),
+              height: getRelativeScreenHeight(context, 40),
             ),
             Padding(
               padding: EdgeInsets.all(getRelativeScreenWidth(context, 20)),
               child: Text(
                 "Offices",
-                style: Theme.of(context).textTheme.headline2,
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
             StreamBuilder(
@@ -218,30 +222,33 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
                       ),
                     );
                   default:
-                    List<DocumentSnapshot> umapSourceDocuments =
-                        snapshot.data!.docs;
-                    if (umapSourceDocuments.length == 0) {
+                    DocumentSnapshot umapSourceDocuments =
+                        snapshot.data!.docs[0];
+                    if (umapSourceDocuments["id"].isEmpty) {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
                             "Oh, there doesn't seem to be anything under this category",
-                            textAlign: TextAlign.left,
+                            textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
                       );
                     } else {
                       return ListView.builder(
+                        padding: EdgeInsets.zero,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemExtent: getRelativeScreenHeight(context, 195),
-                        itemCount: umapSourceDocuments.length,
+                        itemCount: umapSourceDocuments["id"].length,
                         itemBuilder: (context, index) {
-                          return buildPopularPlacesList(
-                            context,
-                            document: umapSourceDocuments[index],
-                          );
+                          isSaved.add(false);
+
+                          return buildPlacesList(context,
+                              index: index,
+                              document: umapSourceDocuments,
+                              category: "offices");
                         },
                       );
                     }
@@ -249,15 +256,15 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
               },
             ),
 
-            ///Offices blocks Stream
+            ///Classes blocks Stream
             SizedBox(
-              height: getRelativeScreenHeight(context, 10),
+              height: getRelativeScreenHeight(context, 40),
             ),
             Padding(
               padding: EdgeInsets.all(getRelativeScreenWidth(context, 20)),
               child: Text(
                 "Classes",
-                style: Theme.of(context).textTheme.headline2,
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
             StreamBuilder(
@@ -277,30 +284,35 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
                       ),
                     );
                   default:
-                    List<DocumentSnapshot> umapSourceDocuments =
-                        snapshot.data!.docs;
-                    if (umapSourceDocuments.length == 0) {
+                    DocumentSnapshot umapSourceDocuments =
+                        snapshot.data!.docs[0];
+
+                    ///Because there is only 1 document in the collection
+                    if (umapSourceDocuments["id"].isEmpty) {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
                             "Oh, there doesn't seem to be anything under this category",
-                            textAlign: TextAlign.left,
+                            textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
                       );
                     } else {
                       return ListView.builder(
+                        padding: EdgeInsets.zero,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemExtent: getRelativeScreenHeight(context, 195),
-                        itemCount: umapSourceDocuments.length,
+                        itemCount: umapSourceDocuments["id"].length,
                         itemBuilder: (context, index) {
-                          return buildPopularPlacesList(
-                            context,
-                            document: umapSourceDocuments[index],
-                          );
+                          isSaved.add(false);
+
+                          return buildPlacesList(context,
+                              index: index,
+                              document: umapSourceDocuments,
+                              category: "classes");
                         },
                       );
                     }

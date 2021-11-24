@@ -21,8 +21,8 @@ void addToSavedList({required UmapSaved savedItem}) {
 }
 
 void removeFromSavedList(
-    {required UmapSaved savedItem, required String locationName}) {
-  umapSPList.removeWhere((savedItem) => savedItem.savedName == locationName);
+    {required UmapSaved savedItem, required String locationID}) {
+  umapSPList.removeWhere((savedItem) => savedItem.savedID == locationID);
   if (umapSPList.isEmpty)
     //setState(() {});
     saveSPData();
@@ -39,7 +39,7 @@ void saveSPData() async {
   print(spList);
 }
 
-void loadSPData() {
+void loadSPData() async {
   List<String> spList = umapSharedPreferences.getStringList('list')!;
   umapSPList = spList
       .map((savedItem) => UmapSaved.fromMap(json.decode(savedItem)))

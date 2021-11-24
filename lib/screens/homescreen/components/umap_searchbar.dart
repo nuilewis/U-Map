@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:u_map/size_config.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UMapSearchBar extends StatefulWidget {
   @override

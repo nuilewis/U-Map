@@ -7,11 +7,13 @@ class UmapTextButton extends StatelessWidget {
   final String buttonText;
   final String buttonIconLink;
   final VoidCallback? onPressed;
+  final bool isDoingWork;
 
   const UmapTextButton(
       {Key? key,
       required this.buttonText,
       required this.buttonIconLink,
+      required this.isDoingWork,
       this.onPressed})
       : super(key: key);
   @override
@@ -28,24 +30,40 @@ class UmapTextButton extends StatelessWidget {
             getRelativeScreenWidth(context, 20),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              buttonText,
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
-            SizedBox(
-              width: getRelativeScreenWidth(context, 5),
-            ),
-            SvgPicture.asset(
-              buttonIconLink,
-              color: Theme.of(context).iconTheme.color,
-              //height: 20,
-            ),
-          ],
-        ),
+
+        //check if is doing work and return circular progress indicator or actual button
+        child: isDoingWork
+            ? Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator.adaptive(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).iconTheme.color!,
+                    ),
+                    //valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    buttonText,
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                  SizedBox(
+                    width: getRelativeScreenWidth(context, 5),
+                  ),
+                  SvgPicture.asset(
+                    buttonIconLink,
+                    color: Theme.of(context).iconTheme.color,
+                    //height: 20,
+                  ),
+                ],
+              ),
       ),
     );
   }

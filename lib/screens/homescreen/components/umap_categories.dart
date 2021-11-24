@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_shared_preferences.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_sp_methods.dart';
+import 'package:u_map/constants.dart';
 import 'package:u_map/screens/findscreen/components/umap_list_item.dart';
 import 'package:u_map/screens/locationDetailsScreen/umap_location_details.dart';
 import '../../../size_config.dart';
@@ -16,35 +17,43 @@ class UmapCategories extends StatefulWidget {
 }
 
 class _UmapCategoriesState extends State<UmapCategories> {
-  // late final Stream<QuerySnapshot> umapFirestoreStream =
-  //     FirebaseFirestore.instance.collection('umap_uba').snapshots();
   late final Stream<QuerySnapshot> umapFirestoreStream;
-  bool isSaved = false;
   late LatLng markerLoc;
   int selectedIndex = 0;
+  List<bool> isSaved = [];
   List<bool> onSelected = [true, false, false];
-  late String firestoreCategory = "administrative blocks";
+  String firestoreCategory = "administrative blocks";
+  late Widget streamToShow;
+  late List<Widget> streams = [];
 
   void initState() {
     super.initState();
+    streamToShow = classesStream();
+    streams = [
+      classesStream(),
+      adminStream(),
+      officesStream(),
+    ];
     umapFirestoreStream = FirebaseFirestore.instance
         .collection("umap_bamenda")
-        .doc("umap_uba")
+        .doc("umap_uba_ref")
         .collection(firestoreCategory)
         .snapshots();
   }
 
   List<String> categoryNames = [
+    "Classes",
     "Administrative\nBlocks",
     "Offices",
-    "Class Rooms",
   ];
 
-  List<Color> categoryColors = [
-    Color(0xFFFAB8EE),
-    Color(0xFF9C78EF),
-    Color(0xFF69D2C4),
-  ];
+  // List<Color> categoryColors = [
+  //   Color(0xFFFAB8EE),
+  //   Color(0xFF9C78EF),
+  //   Color(0xFF69D2C4),
+  // ];
+  //Color categoryColors = Color(0xFF85C9F6);
+  Color categoryColors = cSecondaryColor;
 
   List<String> categoryIconLinks = [
     "assets/svg/home_icon.svg",
@@ -53,86 +62,77 @@ class _UmapCategoriesState extends State<UmapCategories> {
   ];
 
   List<String> umapCategories = [
+    "classes",
     "administrative blocks",
     "offices",
-    "classes",
   ];
 
   Widget buildPlacesList(
     BuildContext context, {
     required DocumentSnapshot document,
+    required int index,
+    required String category,
   }) {
     for (int i = 0; i < umapSPList.length; i++) {
       ///Check if is saved
-      if (umapSPList[i].savedName == document["name"]) {
-        isSaved = true;
+      if (umapSPList[i].savedID == document["id"][index]) {
+        isSaved[index] = true;
       }
     }
+
     return UmapListItem(
-      title: document["name"],
-      sourceLocation:
-          LatLng(document["location"].latitude, document["location"].longitude),
-      description: document["description"],
-      imgSrc: document["imageUrl"],
-      firstIconSvgLink: isSaved
+      title: document["name"][index],
+      description: document["description"][index],
+      imgSrc: document["imageUrl"][index],
+      firstIconSvgLink: isSaved[index]
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
-      firstIconOnPressed: isSaved
+      firstIconOnPressed: isSaved[index]
           ? () {
               Feedback.forTap(context);
-              GeoPoint sourceLocation = document["location"];
+
               setState(() {
                 removeFromSavedList(
                     savedItem: UmapSaved(
-                      savedName: document["name"],
-                      savedDescription: document["description"],
-                      savedImgUrl: document["imageUrl"],
-                      // savedDistance: calcDistance!.toStringAsFixed(2),
-                      savedDistance: "1km",
-                      savedLocationLatitude: sourceLocation.latitude.toDouble(),
-                      savedLocationLongitude:
-                          sourceLocation.latitude.toDouble(),
+                      savedCategory: firestoreCategory,
+                      savedID: document["id"][index],
+                      savedName: document["name"][index],
+                      savedDescription: document["description"][index],
+                      savedImgUrl: document["imageUrl"][index],
                     ),
-                    locationName: document["name"]);
-                setState(() {
-                  isSaved = false;
-                });
+                    locationID: document[index].id);
+
+                isSaved[index] = !isSaved[index];
               });
             }
           : () {
               Feedback.forTap(context);
-              GeoPoint sourceLocation = document["location"];
               setState(() {
                 addToSavedList(
                   savedItem: UmapSaved(
-                    savedName: document["name"],
-                    savedDescription: document["description"],
-                    savedImgUrl: document["imageUrl"],
-
-                    ///Todo: Replace Saved Distance with actual Saved distance
-                    // savedDistance: calcDistance!.toStringAsFixed(2),
-                    savedDistance: "1km",
-                    savedLocationLatitude: sourceLocation.latitude.toDouble(),
-                    savedLocationLongitude: sourceLocation.longitude.toDouble(),
+                    savedCategory: category,
+                    savedID: document["id"][index],
+                    savedName: document["name"][index],
+                    savedDescription: document["description"][index],
+                    savedImgUrl: document["imageUrl"][index],
                   ),
                 );
-                setState(() {
-                  isSaved = false;
-                });
+
+                isSaved[index] = !isSaved[index];
               });
             },
       secondIconSvgLink: "assets/svg/forward_icon.svg",
       secondIconOnPressed: () {
-        markerLoc = LatLng(
-            document["location"].latitude, document["location"].longitude);
+        Feedback.forTap(context);
+        HapticFeedback.lightImpact();
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
-              imgSrc: document["imageUrl"],
-              name: document["name"],
-              description: document["description"],
-              markerLocation: markerLoc,
+              category: firestoreCategory,
+              documentID: document["id"][index],
+              imgSrc: document["imageUrl"][index],
             ),
           ),
         );
@@ -140,9 +140,64 @@ class _UmapCategoriesState extends State<UmapCategories> {
     );
   }
 
-  // Widget buildCategories(BuildContext context, { required DocumentSnapshot document}){
-  //   return CategoryItem(categoryName: document.id, categoryIconLink: '', color: color);
+  // Widget streamToShow(
+  //     {required Stream<QuerySnapshot> firestoreStream,
+  //     required String firestoreCategory}) {
+  //   return StreamBuilder(
+  //     stream: firestoreStream,
+  //     builder: (
+  //       BuildContext context,
+  //       AsyncSnapshot<QuerySnapshot> snapshot,
+  //     ) {
+  //       switch (snapshot.connectionState) {
+  //         case ConnectionState.none:
+  //           return Center(
+  //             child: CircularProgressIndicator.adaptive(
+  //               backgroundColor: Colors.transparent,
+  //               valueColor: AlwaysStoppedAnimation<Color>(
+  //                 Theme.of(context).iconTheme.color!,
+  //               ),
+  //             ),
+  //           );
+  //         case ConnectionState.waiting:
+  //           return Center(
+  //             child: CircularProgressIndicator.adaptive(
+  //               backgroundColor: Colors.transparent,
+  //               valueColor: AlwaysStoppedAnimation<Color>(
+  //                 Theme.of(context).iconTheme.color!,
+  //               ),
+  //             ),
+  //           );
+  //         default:
+  //           DocumentSnapshot umapSourceDocuments = snapshot.data!.docs[0];
+  //
+  //           ///0 bcs there is only 1 document in the collection
+  //
+  //           return Container(
+  //             child: ListView.builder(
+  //                 physics: NeverScrollableScrollPhysics(),
+  //                 scrollDirection: Axis.vertical,
+  //                 shrinkWrap: true,
+  //                 itemExtent: getRelativeScreenHeight(context, 195),
+  //                 itemCount: umapSourceDocuments["id"].length,
+  //                 itemBuilder: (context, index) {
+  //                   //Making all indexes of isSaved false
+  //
+  //                   isSaved.add(false);
+  //
+  //                   return buildPlacesList(
+  //                     context,
+  //                     document: umapSourceDocuments,
+  //                     index: index,
+  //                     category: firestoreCategory,
+  //                   );
+  //                 }),
+  //           );
+  //       }
+  //     },
+  //   );
   // }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -172,7 +227,8 @@ class _UmapCategoriesState extends State<UmapCategories> {
                     width: getRelativeScreenWidth(context, 10),
                   ),
                   ListView.builder(
-                    physics: NeverScrollableScrollPhysics(), shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     //itemExtent: 100,
                     itemCount: 3,
@@ -186,12 +242,13 @@ class _UmapCategoriesState extends State<UmapCategories> {
                             onSelected[index] = true;
                             setState(() {
                               firestoreCategory = umapCategories[index];
+                              streamToShow = streams[index];
                             });
                           },
                           child: CategoryItem(
                             onSelected: onSelected[index],
                             categoryName: categoryNames[index],
-                            color: categoryColors[index],
+                            color: categoryColors,
                             categoryIconLink: categoryIconLinks[index],
                           ));
                     },
@@ -209,59 +266,226 @@ class _UmapCategoriesState extends State<UmapCategories> {
           ),
 
           ///Build List of Stores
-          Container(
-            child: StreamBuilder(
-              stream: umapFirestoreStream,
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<QuerySnapshot> snapshot,
-              ) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                    return Center(
-                      child: CircularProgressIndicator.adaptive(
-                        backgroundColor: Colors.transparent,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).iconTheme.color!,
-                        ),
-                      ),
-                    );
-                  case ConnectionState.waiting:
-                    return Center(
-                      child: CircularProgressIndicator.adaptive(
-                        backgroundColor: Colors.transparent,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).iconTheme.color!,
-                        ),
-                      ),
-                    );
-                  default:
-                    List<DocumentSnapshot> umapSourceDocuments =
-                        snapshot.data!.docs;
-                    return Container(
-                      child: ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemExtent: getRelativeScreenHeight(context, 195),
-                          itemCount: umapSourceDocuments.length,
-                          itemBuilder: (context, index) {
-                            return buildPlacesList(
-                              context,
-                              document: umapSourceDocuments[index],
-                            );
-                          }),
-                    );
-                }
-              },
-            ),
-          ),
+          Container(child: streamToShow),
         ],
       ),
     );
   }
+
+  ///The three different stream builders for the different categories;
+
+  Widget adminStream() {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("umap_bamenda")
+          .doc("umap_uba_ref")
+          .collection("administrative blocks")
+          .snapshots(),
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasData) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).iconTheme.color!,
+                  ),
+                ),
+              );
+            case ConnectionState.waiting:
+              return Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).iconTheme.color!,
+                  ),
+                ),
+              );
+            default:
+              DocumentSnapshot umapSourceDocuments = snapshot.data!.docs[0];
+
+              ///0 bcs there is only 1 document in the collection
+
+              return Container(
+                child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemExtent: getRelativeScreenHeight(context, 195),
+                    itemCount: umapSourceDocuments["id"].length,
+                    itemBuilder: (context, index) {
+                      //Making all indexes of isSaved false
+
+                      isSaved.add(false);
+
+                      return buildPlacesList(
+                        context,
+                        document: umapSourceDocuments,
+                        index: index,
+                        category: "administrative blocks",
+                      );
+                    }),
+              );
+          }
+        } else {
+          return Center(
+            child: Text(
+              "Hmm, we can't find anything under this category",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget classesStream() {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("umap_bamenda")
+          .doc("umap_uba_ref")
+          .collection("classes")
+          .snapshots(),
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasData) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).iconTheme.color!,
+                  ),
+                ),
+              );
+            case ConnectionState.waiting:
+              return Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).iconTheme.color!,
+                  ),
+                ),
+              );
+            default:
+              DocumentSnapshot umapSourceDocuments = snapshot.data!.docs[0];
+
+              ///0 bcs there is only 1 document in the collection
+
+              return Container(
+                child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemExtent: getRelativeScreenHeight(context, 195),
+                    itemCount: umapSourceDocuments["id"].length,
+                    itemBuilder: (context, index) {
+                      //Making all indexes of isSaved false
+
+                      isSaved.add(false);
+
+                      return buildPlacesList(
+                        context,
+                        document: umapSourceDocuments,
+                        index: index,
+                        category: "classes",
+                      );
+                    }),
+              );
+          }
+        } else {
+          return Center(
+            child: Text(
+              "Hmm, we can't find anything under this category",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget officesStream() {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("umap_bamenda")
+          .doc("umap_uba_ref")
+          .collection("offices")
+          .snapshots(),
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasData) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).iconTheme.color!,
+                  ),
+                ),
+              );
+            case ConnectionState.waiting:
+              return Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).iconTheme.color!,
+                  ),
+                ),
+              );
+            default:
+              DocumentSnapshot umapSourceDocuments = snapshot.data!.docs[0];
+
+              ///0 bcs there is only 1 document in the collection
+
+              return Container(
+                child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemExtent: getRelativeScreenHeight(context, 195),
+                    itemCount: umapSourceDocuments["id"].length,
+                    itemBuilder: (context, index) {
+                      //Making all indexes of isSaved false
+
+                      isSaved.add(false);
+
+                      return buildPlacesList(
+                        context,
+                        document: umapSourceDocuments,
+                        index: index,
+                        category: "offices",
+                      );
+                    }),
+              );
+          }
+        } else {
+          return Center(
+            child: Text(
+              "Hmm, we can't find anything under this category",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          );
+        }
+      },
+    );
+  }
 }
 
+/// Category Item Widget
 class CategoryItem extends StatelessWidget {
   final Color color;
   final VoidCallback? onPressed;
@@ -291,7 +515,9 @@ class CategoryItem extends StatelessWidget {
           borderRadius: BorderRadius.all(
             Radius.circular(15),
           ),
-          border: Border.all(width: 2, color: color)),
+          border: Border.all(
+              width: 2,
+              color: onSelected ? color : Theme.of(context).iconTheme.color!)),
       height: getRelativeScreenHeight(context, 100),
       width: screenSize.width * .5,
       child: Stack(
@@ -309,12 +535,7 @@ class CategoryItem extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                   horizontal: getRelativeScreenWidth(context, 10)),
               child: Text(categoryName,
-                  style: onSelected
-                      ? Theme.of(context).textTheme.headline2
-                      : Theme.of(context)
-                          .textTheme
-                          .headline2!
-                          .copyWith(color: color)),
+                  style: Theme.of(context).textTheme.headline2),
             ),
           ),
         ],

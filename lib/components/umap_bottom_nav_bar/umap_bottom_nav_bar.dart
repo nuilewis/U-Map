@@ -21,7 +21,7 @@ class _UMapBottomNavBarState extends State<UMapBottomNavBar> {
   int currentPageIndex = 0;
   Color menuItemBgColor = Colors.transparent;
   List<bool> onMenuclicked = [true, false, false];
-  Color menuBgGradientTransParentColor = Color(0x00FFFFF);
+  Color menuBgGradientTransColor = Color(0x00FFFFF);
 
   final List<Widget> _pageList = [
     UMapHomeScreen(),
@@ -36,10 +36,11 @@ class _UMapBottomNavBarState extends State<UMapBottomNavBar> {
   ];
   @override
   Widget build(BuildContext context) {
-    if (ThemeMode == ThemeMode.dark) {
-      menuBgGradientTransParentColor = Color(0x00000000);
+    ///Todo: fix this
+    if (Theme.of(context).scaffoldBackgroundColor == Colors.white) {
+      menuBgGradientTransColor = Color(0xFFFFFF);
     } else {
-      menuBgGradientTransParentColor = Color(0x00FFFFF);
+      menuBgGradientTransColor = Color(0x000000);
     }
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -52,9 +53,9 @@ class _UMapBottomNavBarState extends State<UMapBottomNavBar> {
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
                 Theme.of(context).scaffoldBackgroundColor,
-                Color(0x00FFFFFF)
+                menuBgGradientTransColor
               ], stops: [
-                0.5,
+                0.4,
                 1
               ], end: Alignment.topCenter, begin: Alignment.bottomCenter),
             ),

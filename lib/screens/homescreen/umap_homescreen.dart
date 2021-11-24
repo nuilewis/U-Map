@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:u_map/components/umapDrawer.dart';
 import 'package:u_map/components/umap_location/umap_permissions.dart';
-import 'package:u_map/screens/homescreen/components/umap_maps.dart';
+
 import 'package:u_map/screens/homescreen/components/umap_app_bar.dart';
 import 'package:u_map/screens/permissionscreens/umapPermissionScreen.dart';
 import 'package:u_map/size_config.dart';

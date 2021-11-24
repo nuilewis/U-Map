@@ -16,19 +16,19 @@ class UMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: lightThemeData(context),
-        darkTheme: darkThemeData(context),
-        //themeMode: ThemeMode.light,
-        themeMode: ThemeMode.dark,
-        debugShowCheckedModeBanner: false,
-        //home: UMapHomeScreen(),
-        // home: UMapFindScreen(),
-        //home: UMapBottomNavBar(),
-        home: UMapNavigationScreen(
-            name: 'null', description: 'null', directionInfo: null)
-        //home: UMapSavedScreen(),
-        //home: UmapLocationDetails(),
-        );
+      title: 'U-Map',
+      theme: lightThemeData(context),
+      darkTheme: darkThemeData(context),
+      //themeMode: ThemeMode.light,
+      themeMode: ThemeMode.light,
+      debugShowCheckedModeBanner: false,
+      //home: UMapHomeScreen(),
+      // home: UMapFindScreen(),
+      home: UMapBottomNavBar(),
+      // home: UMapNavigationScreen(
+      //      name: 'null', description: 'null', directionInfo: null)
+      //home: UMapSavedScreen(),
+      //home: UmapLocationDetails(),
+    );
   }
 }

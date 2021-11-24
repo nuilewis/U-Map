@@ -31,8 +31,6 @@ class _UMapSavedScreenState extends State<UMapSavedScreen> {
   ) {
     return UmapListItem(
       title: umapSPList[index].savedName,
-      sourceLocation: LatLng(umapSPList[index].savedLocationLatitude,
-          umapSPList[index].savedLocationLongitude),
       description: umapSPList[index].savedDescription,
       imgSrc: umapSPList[index].savedImgUrl,
       firstIconSvgLink: "assets/svg/trash_icon.svg",
@@ -41,29 +39,24 @@ class _UMapSavedScreenState extends State<UMapSavedScreen> {
         setState(() {
           removeFromSavedList(
               savedItem: UmapSaved(
+                savedCategory: umapSPList[index].savedCategory,
+                savedID: umapSPList[index].savedID,
                 savedName: umapSPList[index].savedName,
                 savedDescription: umapSPList[index].savedDescription,
-                savedDistance: umapSPList[index].savedDistance,
-                savedLocationLatitude: umapSPList[index].savedLocationLatitude,
-                savedLocationLongitude:
-                    umapSPList[index].savedLocationLongitude,
                 savedImgUrl: umapSPList[index].savedImgUrl,
               ),
-              locationName: umapSPList[index].savedName);
+              locationID: umapSPList[index].savedID);
         });
       },
       secondIconSvgLink: "assets/svg/forward_icon.svg",
       secondIconOnPressed: () {
-        LatLng markerLoc = LatLng(umapSPList[index].savedLocationLatitude,
-            umapSPList[index].savedLocationLongitude);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
+              category: umapSPList[index].savedCategory,
+              documentID: umapSPList[index].savedID,
               imgSrc: umapSPList[index].savedImgUrl,
-              name: umapSPList[index].savedName,
-              description: umapSPList[index].savedDescription,
-              markerLocation: markerLoc,
             ),
           ),
         );

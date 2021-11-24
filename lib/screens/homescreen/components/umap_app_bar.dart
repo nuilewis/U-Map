@@ -8,7 +8,6 @@ import 'umap_searchbar.dart';
 class UmapAppBar extends StatelessWidget with PreferredSizeWidget {
   final Size preferredSize;
 
-  //UmapAppBar(this.prefferedSize);
   UmapAppBar({
     this.preferredSize = const Size.fromHeight(80),
     Key? key,
@@ -26,6 +25,13 @@ class UmapAppBar extends StatelessWidget with PreferredSizeWidget {
       //     color: Theme.of(context).iconTheme.color,
       //   ),
       // ),
+      leading: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+        child: SvgPicture.asset(
+          "assets/svg/umap_logo.svg",
+          height: 90,
+        ),
+      ),
       actions: [
         IconButton(
           splashColor: Colors.transparent,

@@ -15,8 +15,11 @@ class PopularPlaces extends StatefulWidget {
 }
 
 class _PopularPlacesState extends State<PopularPlaces> {
-  final Stream<QuerySnapshot> umapFirestoreStream =
-      FirebaseFirestore.instance.collection('umap_uba').snapshots();
+  final Stream<QuerySnapshot> umapFirestoreStream = FirebaseFirestore.instance
+      .collection("umap_bamenda")
+      .doc("umap_uba_ref")
+      .collection("administrative blocks")
+      .snapshots();
 
   late final LatLng markerLoc;
   bool isSaved = false;
@@ -28,12 +31,15 @@ class _PopularPlacesState extends State<PopularPlaces> {
   }
 
   Widget buildPopularPlacesList(
-      BuildContext context, DocumentSnapshot document) {
+      {required BuildContext context,
+      required DocumentSnapshot document,
+      required int index,
+      required String category}) {
     ///Todo: Add code to find the most popular locations
     return PopularPlacesListItem(
-      title: document["name"],
-      markerGeopoint: document["location"],
-      imageSrc: document["imageUrl"],
+      title: document["name"][index],
+      //markerGeopoint: document["location"][index],
+      imageSrc: document["imageUrl"][index],
       saveIconLink: isSaved
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
@@ -44,13 +50,12 @@ class _PopularPlacesState extends State<PopularPlaces> {
               setState(() {
                 removeFromSavedList(
                   savedItem: UmapSaved(
-                      savedName: document["name"],
-                      savedDescription: document["description"],
-                      savedDistance: 'calcdistance',
-                      savedLocationLatitude: document["location"].latitude,
-                      savedLocationLongitude: document["location"].longitude,
-                      savedImgUrl: document["imageUrl"]),
-                  locationName: document["name"],
+                      savedCategory: category,
+                      savedID: document["id"][index],
+                      savedName: document["name"][index],
+                      savedDescription: document["description"][index],
+                      savedImgUrl: document["imageUrl"][index]),
+                  locationID: document["id"][index],
                 );
                 isSaved = false;
               });
@@ -61,12 +66,11 @@ class _PopularPlacesState extends State<PopularPlaces> {
               setState(() {
                 addToSavedList(
                   savedItem: UmapSaved(
-                      savedName: document["name"],
-                      savedDescription: document["description"],
-                      savedDistance: 'calcdistance',
-                      savedLocationLatitude: document["location"].latitude,
-                      savedLocationLongitude: document["location"].longitude,
-                      savedImgUrl: document["imageUrl"]),
+                      savedCategory: category,
+                      savedID: document["id"][index],
+                      savedName: document["name"][index],
+                      savedDescription: document["description"][index],
+                      savedImgUrl: document["imageUrl"][index]),
                 );
                 isSaved = true;
               });
@@ -78,11 +82,10 @@ class _PopularPlacesState extends State<PopularPlaces> {
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
-                imgSrc: document["imageUrl"],
-                name: document["name"],
-                description: document["description"],
-                markerLocation: LatLng(document["location"].latitude,
-                    document["location"].longitude)),
+              category: category,
+              documentID: document["id"][index],
+              imgSrc: document["imageUrl"][index],
+            ),
           ),
         );
       },
@@ -198,7 +201,7 @@ class _PopularPlacesState extends State<PopularPlaces> {
             top: getRelativeScreenHeight(context, 40),
             left: getRelativeScreenHeight(context, 20),
             child: Text(
-              "Popular",
+              "Popular Places",
               style: Theme.of(context).textTheme.headline1,
               textAlign: TextAlign.left,
             ),
@@ -220,22 +223,27 @@ class _PopularPlacesState extends State<PopularPlaces> {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
                     return Center(
-                      child: CircularProgressIndicator.adaptive(),
+                      child: CircularProgressIndicator.adaptive(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).iconTheme.color!,
+                        ),
+                      ),
                     );
                   default:
-                    List<DocumentSnapshot> umapSourceDocuments =
-                        snapshot.data!.docs;
+                    List umapSourceDocumentsList = snapshot.data!.docs;
+                    var umapSourceDocuments = umapSourceDocumentsList[0];
                     return Container(
                       height: getRelativeScreenHeight(context, 240),
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         //itemExtent: getRelativeScreenWidth(context, 240),
-                        itemCount: umapSourceDocuments.length,
+                        itemCount: umapSourceDocuments["id"].length,
                         itemBuilder: (context, index) => buildPopularPlacesList(
-                          context,
-                          umapSourceDocuments[index],
-                        ),
+                            context: context,
+                            document: umapSourceDocuments,
+                            index: index,
+                            category: "administrative blocks"),
                       ),
                     );
                 }

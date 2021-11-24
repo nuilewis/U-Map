@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:u_map/screens/savedscreen/umap_savedscreen.dart';
+import 'package:u_map/size_config.dart';
 
 class UmapDrawer extends Drawer {
   @override
@@ -7,20 +9,23 @@ class UmapDrawer extends Drawer {
     // TODO: implement build
     return Drawer(
       child: ListView(
-        shrinkWrap: true,
+        padding: EdgeInsets.only(
+          left: 10,
+          top: getRelativeScreenHeight(context, 80),
+        ),
+        //shrinkWrap: true,
         children: [
-          SvgPicture.asset("assetName"),
+          Container(
+              child: SvgPicture.asset(
+            "assets/svg/umap_logo.svg",
+            height: 70,
+          )),
           ListTile(
-            selected: true,
-            enableFeedback: true,
-            selectedTileColor: Theme.of(context).primaryColor,
-            title: Text(
-              "Home",
-              style: Theme.of(context).textTheme.bodyText1,
+            leading: SvgPicture.asset(
+              "assets/svg/users_icon.svg",
+              color: Theme.of(context).iconTheme.color,
             ),
-          ),
-          ListTile(
-            selected: true,
+            //onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => UMapAboutScreen()));},
             enableFeedback: true,
             selectedTileColor: Theme.of(context).primaryColor,
             title: Text(
@@ -29,25 +34,10 @@ class UmapDrawer extends Drawer {
             ),
           ),
           ListTile(
-            selected: true,
-            enableFeedback: true,
-            selectedTileColor: Theme.of(context).primaryColor,
-            title: Text(
-              "Favourites",
-              style: Theme.of(context).textTheme.bodyText1,
+            leading: SvgPicture.asset(
+              "assets/svg/dark_mode_icon.svg",
+              color: Theme.of(context).iconTheme.color,
             ),
-          ),
-          ListTile(
-            selected: true,
-            enableFeedback: true,
-            selectedTileColor: Theme.of(context).primaryColor,
-            title: Text(
-              "Find",
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-          ),
-          ListTile(
-            selected: true,
             enableFeedback: true,
             selectedTileColor: Theme.of(context).primaryColor,
             title: Text(
@@ -55,16 +45,22 @@ class UmapDrawer extends Drawer {
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),
-          ListTile(
-            onTap: () {},
-            selected: true,
-            enableFeedback: true,
-            selectedTileColor: Theme.of(context).primaryColor,
-            title: Text(
-              "Privacy Policy",
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-          ),
+          // ListTile(
+          //   leading: SvgPicture.asset(
+          //     "assets/svg/heart_icon.svg",
+          //     color: Theme.of(context).iconTheme.color,
+          //   ),
+          //   onTap: () {
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => UMapSavedScreen()));
+          //   },
+          //   enableFeedback: true,
+          //   selectedTileColor: Theme.of(context).primaryColor,
+          //   title: Text(
+          //     "Privacy Policy",
+          //     style: Theme.of(context).textTheme.bodyText1,
+          //   ),
+          // ),
         ],
       ),
     );

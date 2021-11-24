@@ -34,7 +34,6 @@ class _UmapMapsState extends State<UmapMaps> {
   LatLng? markerLocation;
   LatLng _lastMapPosition = _center;
   Directions? directionInfo;
-  Directions? directionFromGoogle;
 
   Set<Marker> setMarkers() {
     return uMapMarkers;
@@ -50,7 +49,7 @@ class _UmapMapsState extends State<UmapMaps> {
   ///Setting a custom marker
   setCustomMarker() async {
     mapMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), "assetS/images/marker_icon.png");
+        ImageConfiguration(), "assets/images/marker_icon.png");
   }
 
   ///Changing Map Type
@@ -158,23 +157,6 @@ class _UmapMapsState extends State<UmapMaps> {
                   markerId: MarkerId(snapshot.data!.docs[i]["name"]),
                   position: markerLocation!,
                   infoWindow: InfoWindow(title: snapshot.data!.docs[i]["name"]),
-                  onTap: () async {
-                    directionFromGoogle = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UmapLocationDetails(
-                          imgSrc: snapshot.data!.docs[i]["imageUrl"],
-                          name: snapshot.data!.docs[i]["name"],
-                          description: snapshot.data!.docs[i]["description"],
-                          markerLocation: markerLocation!,
-                        ),
-                      ),
-                    );
-
-                    setState(() {
-                      directionInfo = directionFromGoogle;
-                    });
-                  },
                 ),
               );
             }

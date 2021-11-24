@@ -30,7 +30,11 @@ ThemeData lightThemeData(BuildContext context) {
       headline2: TextStyle(
           color: cTextColorBlack, fontSize: 18, fontWeight: FontWeight.bold),
     ),
-    colorScheme: ColorScheme.light().copyWith(secondary: cLightGrey),
+    //colorScheme: ColorScheme.light().copyWith(secondary: cLightGrey),
+    colorScheme: ColorScheme.light().copyWith(
+      secondary: cSecondaryColor,
+    ),
+    cardColor: cLightGrey,
   );
 }
 
@@ -41,7 +45,7 @@ ThemeData darkThemeData(BuildContext context) {
       appBarTheme: appBarTheme,
       primaryColor: cPrimaryColor.withOpacity(.3),
       primaryColorLight: cPrimaryColorLight.withOpacity(.3),
-      scaffoldBackgroundColor: Colors.black,
+      scaffoldBackgroundColor: cBlackIconColor,
       brightness: Brightness.dark,
       backgroundColor: Colors.white,
       iconTheme: IconThemeData(color: cLightIconColor),
@@ -61,7 +65,8 @@ ThemeData darkThemeData(BuildContext context) {
         headline2: TextStyle(
             color: cTextColorWhite, fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      colorScheme: ColorScheme.dark().copyWith(secondary: cDarkGrey));
+      colorScheme: ColorScheme.dark().copyWith(secondary: cSecondaryColor),
+      cardColor: cDarkGrey);
 }
 
 AppBarTheme appBarTheme = AppBarTheme(

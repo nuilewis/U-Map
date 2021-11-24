@@ -52,6 +52,8 @@ class _UMapNavigationScreenState extends State<UMapNavigationScreen> {
             minChildSize: .05,
             builder: (context, scrollController) {
               return SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                controller: scrollController,
                 child: Container(
                   decoration: BoxDecoration(
                     // border: Border.all(color: Theme.of(context).primaryColor),
@@ -60,6 +62,79 @@ class _UMapNavigationScreenState extends State<UMapNavigationScreen> {
                         top: Radius.circular(
                             getRelativeScreenWidth(context, 32)),
                         bottom: Radius.zero),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 0,
+                        left: 20,
+                        child: Text(
+                          "Navigating To..",
+                          style:
+                              Theme.of(context).textTheme.headline1!.copyWith(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .headline1!
+                                        .color!
+                                        .withOpacity(.2),
+                                  ),
+                        ),
+                      ),
+
+                      ///Area with image and description text
+                      Row(
+                        children: [
+                          Expanded(
+                              flex: 3,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    widget.name,
+                                    style:
+                                        Theme.of(context).textTheme.headline2,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(widget.directionInfo!.totalDistance,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .primaryColor)),
+                                      Text('Km'),
+
+                                      ///Image container
+                                      Container(
+                                        color: Theme.of(context).primaryColor,
+                                        height: 30,
+                                        width: 2,
+                                      ),
+                                      Text(
+                                        widget.directionInfo!.totalDuration,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline2!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .primaryColor),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )),
+                          Expanded(
+                              flex: 1,
+                              child: Container(
+                                width: double.infinity,
+                                height: getRelativeScreenHeight(context, 195),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ))
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               );

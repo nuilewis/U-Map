@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:u_map/components/umapDrawer.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_shared_preferences.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_sp_methods.dart';
 import 'package:u_map/screens/findscreen/components/umap_list_item.dart';
@@ -76,7 +77,7 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
       tempSearchStore = [];
       queryResultSet.forEach((element) {
         ///todo: replace search term with capitalised search term
-        if (element["name"].startsWith(searchTerm)) {
+        if (element["name"].startsWith(searchTerm || capitaliseSearchTerm)) {
           setState(() {
             tempSearchStore.add(element);
           });
@@ -86,6 +87,20 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
 
     return StreamBuilder(
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      ///Todo: make screens to show when searching or no searching
+
+      if (searchTerm.length == 0) {
+        return Container(
+          child: Center(
+            child: Text(
+              "Search Something",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline1,
+            ),
+          ),
+        );
+      }
+
       return buildSearchResult(snapshot);
     });
   }
@@ -178,7 +193,7 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
 
             ///Categories Selector Section
             Positioned(
-              top: getRelativeScreenHeight(context, 110),
+              top: getRelativeScreenHeight(context, 130),
               left: getRelativeScreenWidth(context, 20),
               child: Text(
                 "Categories",
@@ -187,11 +202,11 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
               ),
             ),
             SizedBox(
-              height: getRelativeScreenHeight(context, 20),
+              height: getRelativeScreenHeight(context, 40),
             ),
             Padding(
               padding:
-                  EdgeInsets.only(top: getRelativeScreenHeight(context, 170)),
+                  EdgeInsets.only(top: getRelativeScreenHeight(context, 190)),
               child: Container(
                 height: getRelativeScreenHeight(context, 80),
                 child: SingleChildScrollView(
@@ -222,7 +237,7 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
                               child: CategoryItem(
                                 onSelected: onSelected[index],
                                 categoryName: categoryNames[index],
-                                color: categoryColors[index],
+                                color: Theme.of(context).colorScheme.secondary,
                                 categoryIconLink: categoryIconLinks[index],
                               ));
                         },
@@ -285,6 +300,7 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
           ],
         ),
       ),
+      endDrawer: UmapDrawer(),
     );
   }
 
@@ -303,38 +319,31 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
       firstIconOnPressed: isSaved
           ? () {
               Feedback.forTap(context);
-              GeoPoint sourceLocation = element["location"];
               setState(() {
                 removeFromSavedList(
                     savedItem: UmapSaved(
+                      ///Todo: find actual category and id and replace
+                      savedCategory: '',
+                      savedID: '',
                       savedName: element["name"],
                       savedDescription: element["description"],
                       // savedDistance: calcDistance!.toStringAsFixed(2),
                       savedImgUrl: element["imageUrl"],
-                      savedDistance: "1km",
-                      savedLocationLatitude: sourceLocation.latitude.toDouble(),
-                      savedLocationLongitude:
-                          sourceLocation.latitude.toDouble(),
                     ),
-                    locationName: element["name"]);
+                    locationID: element.id);
                 isSaved = false;
               });
             }
           : () {
               Feedback.forTap(context);
-              GeoPoint sourceLocation = element["location"];
               setState(() {
                 addToSavedList(
                   savedItem: UmapSaved(
+                    savedCategory: '',
+                    savedID: '',
                     savedName: element["name"],
                     savedDescription: element["description"],
                     savedImgUrl: element["imageUrl"],
-
-                    ///Todo: Replace Saved Distance with actual Saved distance
-                    // savedDistance: calcDistance!.toStringAsFixed(2), savedDistance:
-                    savedDistance: "1km",
-                    savedLocationLatitude: sourceLocation.latitude.toDouble(),
-                    savedLocationLongitude: sourceLocation.longitude.toDouble(),
                   ),
                 );
                 isSaved = true;
@@ -345,11 +354,11 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
-                imgSrc: element["imageUrl"],
-                name: element["name"],
-                description: element["description"],
-                markerLocation: LatLng(element["location"].latitude,
-                    element["location"].longitude)),
+              ///todo: find category and id and put here
+              documentID: element.id,
+              category: '',
+              imgSrc: element["imageUrl"],
+            ),
           ),
         );
       },
