@@ -47,13 +47,13 @@ class _UmapCategoriesState extends State<UmapCategories> {
     "Offices",
   ];
 
-  // List<Color> categoryColors = [
-  //   Color(0xFFFAB8EE),
-  //   Color(0xFF9C78EF),
-  //   Color(0xFF69D2C4),
-  // ];
+  List<Color> categoryColors = [
+    Color(0xFFFAE788),
+    Color(0xFF68E8D5),
+    Color(0xFFFA9595),
+  ];
   //Color categoryColors = Color(0xFF85C9F6);
-  Color categoryColors = cSecondaryColor;
+  //Color categoryColors = cSecondaryColor;
 
   List<String> categoryIconLinks = [
     "assets/svg/home_icon.svg",
@@ -101,9 +101,9 @@ class _UmapCategoriesState extends State<UmapCategories> {
                       savedImgUrl: document["imageUrl"][index],
                     ),
                     locationID: document[index].id);
-
-                isSaved[index] = !isSaved[index];
               });
+
+              isSaved[index] = false;
             }
           : () {
               Feedback.forTap(context);
@@ -117,8 +117,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
                     savedImgUrl: document["imageUrl"][index],
                   ),
                 );
-
-                isSaved[index] = !isSaved[index];
+                isSaved[index] = true;
               });
             },
       secondIconSvgLink: "assets/svg/forward_icon.svg",
@@ -203,6 +202,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: EdgeInsets.only(left: getRelativeScreenWidth(context, 20)),
@@ -248,7 +248,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
                           child: CategoryItem(
                             onSelected: onSelected[index],
                             categoryName: categoryNames[index],
-                            color: categoryColors,
+                            color: categoryColors[index],
                             categoryIconLink: categoryIconLinks[index],
                           ));
                     },
@@ -472,11 +472,13 @@ class _UmapCategoriesState extends State<UmapCategories> {
               );
           }
         } else {
-          return Center(
-            child: Text(
-              "Hmm, we can't find anything under this category",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1,
+          return Container(
+            child: Center(
+              child: Text(
+                "Hmm, we can't find anything under this category",
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
             ),
           );
         }
@@ -511,13 +513,11 @@ class CategoryItem extends StatelessWidget {
         horizontal: getRelativeScreenWidth(context, 10),
       ),
       decoration: BoxDecoration(
-          color: onSelected ? color : Colors.transparent,
-          borderRadius: BorderRadius.all(
-            Radius.circular(15),
-          ),
-          border: Border.all(
-              width: 2,
-              color: onSelected ? color : Theme.of(context).iconTheme.color!)),
+        color: onSelected ? color : Theme.of(context).cardColor,
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ),
       height: getRelativeScreenHeight(context, 100),
       width: screenSize.width * .5,
       child: Stack(
@@ -533,7 +533,7 @@ class CategoryItem extends StatelessWidget {
             bottom: 10,
             child: Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: getRelativeScreenWidth(context, 10)),
+                  horizontal: getRelativeScreenWidth(context, 15)),
               child: Text(categoryName,
                   style: Theme.of(context).textTheme.headline2),
             ),
