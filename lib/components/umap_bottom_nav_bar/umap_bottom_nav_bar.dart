@@ -122,7 +122,7 @@ class UmapBottomNavBarItem extends StatelessWidget {
         ),
       ),
       Padding(
-        padding: EdgeInsets.all(getRelativeScreenWidth(context, 18)),
+        padding: EdgeInsets.all(getRelativeScreenWidth(context, 20)),
         child: SvgPicture.asset(
           iconLink,
           color: Theme.of(context).iconTheme.color,
