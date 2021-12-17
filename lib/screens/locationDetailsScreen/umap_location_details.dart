@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,9 +35,12 @@ class UmapLocationDetails extends StatefulWidget {
 
 class _UmapLocationDetailsState extends State<UmapLocationDetails> {
   ///Todo: Make current location get actual current location
-  LatLng? currentLocation = LatLng(6.002342, 10.264345);
+  //LatLng? currentLocation = LatLng(6.002342, 10.264345);
+  LatLng? currentLocation;
   late final Directions? directionInfo;
   double? calcDistance;
+  String? calDistanceString;
+  late Widget distanceTextWidget;
   late String name;
   late String description;
   late final Stream<QuerySnapshot> fireStoreStream;
@@ -52,6 +54,7 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
     super.initState();
     initUmapSharedPreferences();
     checkIsSaved();
+    getCurrentLocation();
 
     fireStoreStream = FirebaseFirestore.instance
         .collection("umap_bamenda")
@@ -66,9 +69,10 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
     double? locLat = location!.latitude;
     double? locLong = location.longitude;
 
-    if (locLat != null && locLong != null) {
-      currentLocation = LatLng(locLat, locLong);
-    }
+    currentLocation = LatLng(locLat!, locLong!);
+
+    print("currentLocation is: $currentLocation");
+
     return currentLocation;
   }
 
@@ -80,7 +84,7 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
     }
   }
 
-  calculateDistance(LatLng currentLoc, LatLng markerLoc) async {
+  calculateDistance(LatLng currentLoc, LatLng markerLoc) {
     return calcDistance = distanceCalculator(currentLoc, markerLoc);
   }
 
@@ -109,11 +113,11 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
             ),
             child: IconButton(
               icon: SvgPicture.asset(
-                "assets/svg/menu_icon.svg",
+                "assets/svg/menu_alt_icon.svg",
                 color: Theme.of(context).iconTheme.color,
               ),
               onPressed: () {
-                Scaffold.of(context).openEndDrawer();
+                ///Todo: fix end drawer here
               },
             ),
           ),
@@ -137,10 +141,41 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                 name = document["name"];
                 description = document["description"];
 
-                if (currentLocation != null) {
-                  calcDistance =
-                      calculateDistance(currentLocation!, markerLocation!);
-                }
+                Future.delayed(Duration(seconds: 2), () async {
+                  calculateDistance(currentLocation!, markerLocation!);
+                  setState(() {
+                    calDistanceString =
+                        calcDistance?.toStringAsFixed(2) ?? "N/A";
+                  });
+                });
+              }
+
+              ///Show circular progress indicator while calculating distance
+              if (calcDistance == null) {
+                distanceTextWidget = Center(
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator.adaptive(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).iconTheme.color!),
+                    ),
+                  ),
+                );
+              } else {
+                distanceTextWidget = RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: calDistanceString,
+                          style: Theme.of(context).textTheme.headline1),
+                      TextSpan(
+                          text: " km",
+                          style: Theme.of(context).textTheme.headline2),
+                    ],
+                  ),
+                );
               }
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
@@ -195,10 +230,11 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                             fadeOutCurve: Curves.easeOut,
                             fit: BoxFit.cover,
                             imageUrl: widget.imgSrc,
-                            placeholder: (context, imgSrc) =>
-                                CircularProgressIndicator.adaptive(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).iconTheme.color!),
+                            placeholder: (context, imgSrc) => Center(
+                              child: CircularProgressIndicator.adaptive(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).iconTheme.color!),
+                              ),
                             ),
                           ),
                         ),
@@ -214,29 +250,29 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
                             SizedBox(
                               width: getRelativeScreenWidth(context, 5),
                             ),
 
                             ///Distance Text
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      // text: calcDistance
-                                      //     "calculating",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline1),
-                                  TextSpan(
-                                      text: " km",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline2),
-                                ],
-                              ),
-                            ),
+                            GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  Feedback.forTap(context);
+                                  setState(() {
+                                    calcDistance = null;
+                                  });
+                                  calculateDistance(
+                                      currentLocation!, markerLocation!);
+                                  setState(() {
+                                    calDistanceString =
+                                        calcDistance?.toStringAsFixed(2) ??
+                                            "N/A";
+                                  });
+                                },
+                                child: distanceTextWidget),
 
                             ///Add to  and remove from saved Button
                             isSaved
@@ -301,9 +337,13 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
                                     Navigator.push(context, MaterialPageRoute(
                                       builder: (context) {
                                         return UMapNavigationScreen(
+                                            imgSrc: widget.imgSrc,
                                             name: name,
                                             description: description,
-                                            directionInfo: directionInfo);
+                                            directionInfo: directionInfo,
+                                            locationCoordinates:
+                                                markerLocation!,
+                                            locationID: widget.documentID);
                                       },
                                     ));
                                   });
