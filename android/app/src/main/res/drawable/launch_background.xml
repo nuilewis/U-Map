@@ -11,6 +11,6 @@
     </item> -->
     <item
         android:gravity="center"
-        android:drawable="@drawable/umap_logo">
+        android:drawable="@drawable/umap_logo_splash">
     </item>
 </layer-list>
