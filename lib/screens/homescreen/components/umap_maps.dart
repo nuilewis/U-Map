@@ -14,8 +14,16 @@ import 'package:location/location.dart';
 
 class UmapMaps extends StatefulWidget {
   final Directions? directionInformation;
+  final String name;
+  final String locationID;
+  final LatLng locationCoordinates;
 
-  const UmapMaps({Key? key, required this.directionInformation})
+  const UmapMaps(
+      {Key? key,
+      required this.directionInformation,
+      required this.name,
+      required this.locationID,
+      required this.locationCoordinates})
       : super(key: key);
 
   @override
@@ -29,28 +37,40 @@ class _UmapMapsState extends State<UmapMaps> {
   MapType _currentMapType = MapType.normal;
   GoogleMapController? mapController;
   BitmapDescriptor? mapMarker;
-  final Set<Marker> uMapMarkers = {};
+  //final Set<Marker> uMapMarkers = {};
+  late Set<Marker> navigationMarker = {};
   LatLng? currentLocation;
   LatLng? markerLocation;
   LatLng _lastMapPosition = _center;
   Directions? directionInfo;
+  BitmapDescriptor? umapMarkerBig;
+  BitmapDescriptor? umapMarkerSmall;
+  BitmapDescriptor? umapMarker;
 
   Set<Marker> setMarkers() {
-    return uMapMarkers;
+    return navigationMarker;
+  }
+
+  void setCustomMarker() async {
+    umapMarkerBig = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), "assets/images/marker_big.png");
+    umapMarkerSmall = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), "assets/images/marker_small.png");
   }
 
   @override
   initState() {
     //Initialising direction Info
     directionInfo = widget.directionInformation;
+    setCustomMarker();
     super.initState();
   }
 
   ///Setting a custom marker
-  setCustomMarker() async {
-    mapMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), "assets/images/marker_icon.png");
-  }
+  // setCustomMarker() async {
+  //   mapMarker = await BitmapDescriptor.fromAssetImage(
+  //       ImageConfiguration(), "assets/images/marker_icon.png");
+  // }
 
   ///Changing Map Type
   _setCurrentMapType() {
@@ -84,7 +104,7 @@ class _UmapMapsState extends State<UmapMaps> {
         Positioned(
           right: getRelativeScreenWidth(context, 20),
           bottom: screenHeight *
-              .25, // bcs draggable scroll sheet has a min height of .2 of screen height, so it is always above
+              .31, // bcs draggable scroll sheet has a min height of .3 of screen height, so it is always above
           child: UmapIconButton(
             iconLink: "assets/svg/map_change_icon.svg",
             onPressed: () {
@@ -146,19 +166,37 @@ class _UmapMapsState extends State<UmapMaps> {
                 snapshot.data!.docs[i]["location"].longitude,
               );
 
-              uMapMarkers.add(
-                new Marker(
-                  flat: false,
-                  draggable: false,
-                  zIndex: 5,
-                  icon: BitmapDescriptor.defaultMarker,
+              if (MediaQuery.of(context).size.width *
+                      MediaQuery.of(context).devicePixelRatio >
+                  800) {
+                umapMarker = umapMarkerBig;
+              } else {
+                umapMarker = umapMarkerSmall;
+              }
 
-                  ///Todo: Add custom marker icon here
-                  markerId: MarkerId(snapshot.data!.docs[i]["name"]),
-                  position: markerLocation!,
-                  infoWindow: InfoWindow(title: snapshot.data!.docs[i]["name"]),
-                ),
-              );
+              navigationMarker.add(Marker(
+                flat: false,
+                draggable: false,
+                zIndex: 5,
+                icon: umapMarker!,
+                markerId: MarkerId(widget.locationID),
+                position: widget.locationCoordinates,
+                infoWindow: InfoWindow(title: widget.name),
+              ));
+
+              // uMapMarkers.add(
+              //   new Marker(
+              //     flat: false,
+              //     draggable: false,
+              //     zIndex: 5,
+              //     icon: BitmapDescriptor.defaultMarker,
+
+              //     ///Todo: Add custom marker icon here
+              //     markerId: MarkerId(snapshot.data!.docs[i]["name"]),
+              //     position: markerLocation!,
+              //     infoWindow: InfoWindow(title: snapshot.data!.docs[i]["name"]),
+              //   ),
+              // );
             }
         }
         return GoogleMap(
