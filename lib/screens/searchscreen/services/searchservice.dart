@@ -10,7 +10,5 @@ class SearchService {
         .where('searchKey',
             isEqualTo: searchField.substring(0, 1).toUpperCase())
         .get();
-
-    ///todo: add back categories
   }
 }
