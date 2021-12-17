@@ -20,23 +20,24 @@ class UmapSearchScreen extends StatefulWidget {
 }
 
 class _UmapSearchScreenState extends State<UmapSearchScreen> {
-  //TextEditingController searchTerm = new TextEditingController();
+  TextEditingController searchforRef = new TextEditingController();
   var queryResultSet = [];
   var tempSearchStore = [];
   String selectedCategory = 'administrative blocks';
   int selectedIndex = 0;
   List<bool> onSelected = [true, false, false];
+  late Widget resultToDisplay;
 
   List<String> categoryNames = [
     "Administrative\nBlocks",
     "Offices",
-    "Class Rooms",
+    "Classes",
   ];
 
   List<Color> categoryColors = [
-    Color(0xFFFAB8EE),
-    Color(0xFF9C78EF),
-    Color(0xFF69D2C4),
+    Color(0xFFFAE788),
+    Color(0xFF68E8D5),
+    Color(0xFFFA9595),
   ];
 
   List<String> categoryIconLinks = [
@@ -61,29 +62,38 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
       });
     }
     //Capitalizing the first character
-    var capitaliseSearchTerm =
+    String capitaliseSearchTerm =
         searchTerm.substring(0, 1).toUpperCase() + searchTerm.substring(1);
 
-    //Runs the query whe the first character is typed
-    if (queryResultSet.length == 0 && searchTerm.length == 1) {
+    //Runs the query when the first character is typed
+    if (queryResultSet.length == 0 && searchTerm.length > 0) {
       SearchService()
-          .searchByName(searchField: searchTerm, category: searchCategory)
+          .searchByName(
+              searchField: capitaliseSearchTerm, category: searchCategory)
           .then((QuerySnapshot snapshot) {
         for (int i = 0; i < snapshot.docs.length; i++) {
           queryResultSet.add(snapshot.docs[i].data());
         }
-      });
-    } else {
-      tempSearchStore = [];
-      queryResultSet.forEach((element) {
-        ///todo: replace search term with capitalised search term
-        if (element["name"].startsWith(searchTerm || capitaliseSearchTerm)) {
-          setState(() {
-            tempSearchStore.add(element);
-          });
-        }
+        tempSearchStore = [];
+        queryResultSet.forEach((element) {
+          if (element["name"].startsWith(capitaliseSearchTerm)) {
+            setState(() {
+              tempSearchStore.add(element);
+            });
+          }
+        });
       });
     }
+    //else {
+    //   tempSearchStore = [];
+    //   queryResultSet.forEach((element) {
+    //     if (element["name"].startsWith(capitaliseSearchTerm)) {
+    //       setState(() {
+    //         tempSearchStore.add(element);
+    //       });
+    //     }
+    //   });
+    // }
 
     return StreamBuilder(
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -99,17 +109,104 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
             ),
           ),
         );
+      } else {
+        return buildSearchResult(snapshot);
       }
-
-      return buildSearchResult(snapshot);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (searchforRef.text.isEmpty) {
+      setState(() {
+        resultToDisplay = Align(
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * .3, bottom: 20),
+            child: Text(
+              "Search Something",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline1,
+            ),
+          ),
+        );
+      });
+    } else if (queryResultSet.isEmpty) {
+      setState(() {
+        resultToDisplay = Align(
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * .3, bottom: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Nothing Found",
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                Text(
+                  "Try refining your search term",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+    } else {
+      setState(() {
+        resultToDisplay = Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding:
+                EdgeInsets.only(top: getRelativeScreenHeight(context, 290)),
+            child: ListView.builder(
+                shrinkWrap: true,
+                //itemExtent: getRelativeScreenHeight(context, 195),
+                itemCount: tempSearchStore.length,
+                itemBuilder: (context, index) {
+                  // return tempSearchStore
+                  //     .map((element) => buildSearchResult(element))
+                  //     .toList() as Widget;
+
+                  if (tempSearchStore.isNotEmpty) {
+                    tempSearchStore.map((element) => null).toList();
+                    return buildSearchResult(tempSearchStore.elementAt(index));
+                  } else {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text(
+                              "Nothing Found",
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            Text(
+                              "Try refining your search term",
+                              style: Theme.of(context).textTheme.bodyText2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                }),
+          ),
+        );
+      });
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             ///Search Bar Section
             Padding(
@@ -148,6 +245,7 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
                               .withOpacity(.5)),
                     ),
                     child: TextField(
+                      controller: searchforRef,
                       onChanged: (searchTerm) {
                         runSearch(searchTerm, selectedCategory);
                       },
@@ -237,7 +335,7 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
                               child: CategoryItem(
                                 onSelected: onSelected[index],
                                 categoryName: categoryNames[index],
-                                color: Theme.of(context).colorScheme.secondary,
+                                color: categoryColors[index],
                                 categoryIconLink: categoryIconLinks[index],
                               ));
                         },
@@ -249,54 +347,47 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
             ),
 
             ///Search Results Section
-            Padding(
-              padding:
-                  EdgeInsets.only(top: getRelativeScreenHeight(context, 290)),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  //itemExtent: getRelativeScreenHeight(context, 195),
-                  itemCount: tempSearchStore.length,
-                  itemBuilder: (context, index) {
-                    // return tempSearchStore
-                    //     .map((element) => buildSearchResult(element))
-                    //     .toList() as Widget;
-                    if (tempSearchStore.isNotEmpty) {
-                      tempSearchStore.map((element) => null).toList();
-                      return buildSearchResult(
-                          tempSearchStore.elementAt(index));
-                    } else {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              CircularProgressIndicator(),
-                              Text(
-                                "Nothing Found",
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ),
-                              Text(
-                                "Try refining your search term",
-                                style: Theme.of(context).textTheme.bodyText2,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  }),
-            )
-
-            // GridView.count(
-            //   crossAxisCount: 2,
-            //   crossAxisSpacing: 4,
-            //   mainAxisSpacing: 4,
-            //   primary: false,
-            //   shrinkWrap: true,
-            //   children: tempSearchStore.map((element) {
-            //     return buildfakeCard(element);
-            //   }).toList(),
-            // ),
+            // Padding(
+            //   padding:
+            //       EdgeInsets.only(top: getRelativeScreenHeight(context, 290)),
+            //   child: ListView.builder(
+            //       shrinkWrap: true,
+            //       //itemExtent: getRelativeScreenHeight(context, 195),
+            //       itemCount: tempSearchStore.length,
+            //       itemBuilder: (context, index) {
+            //         // return tempSearchStore
+            //         //     .map((element) => buildSearchResult(element))
+            //         //     .toList() as Widget;
+            //
+            //         if (tempSearchStore.isNotEmpty) {
+            //           tempSearchStore.map((element) => null).toList();
+            //           return buildSearchResult(
+            //               tempSearchStore.elementAt(index));
+            //         } else {
+            //           return Center(
+            //             child: Padding(
+            //               padding: EdgeInsets.all(20),
+            //               child: Column(
+            //                 mainAxisAlignment: MainAxisAlignment.center,
+            //                 mainAxisSize: MainAxisSize.min,
+            //                 children: [
+            //                   CircularProgressIndicator(),
+            //                   Text(
+            //                     "Nothing Found",
+            //                     style: Theme.of(context).textTheme.bodyText1,
+            //                   ),
+            //                   Text(
+            //                     "Try refining your search term",
+            //                     style: Theme.of(context).textTheme.bodyText2,
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           );
+            //         }
+            //       }),
+            // )
+            resultToDisplay,
           ],
         ),
       ),
@@ -315,16 +406,17 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
       secondIconSvgLink: "assets/svg/forward_icon.svg",
-      imgSrc: element["imgUrl"],
+
+      imgSrc: element["imageUrl"],
+      // imgSrc: "fake image url",
       firstIconOnPressed: isSaved
           ? () {
               Feedback.forTap(context);
               setState(() {
                 removeFromSavedList(
                     savedItem: UmapSaved(
-                      ///Todo: find actual category and id and replace
-                      savedCategory: '',
-                      savedID: '',
+                      savedCategory: selectedCategory,
+                      savedID: element.id,
                       savedName: element["name"],
                       savedDescription: element["description"],
                       // savedDistance: calcDistance!.toStringAsFixed(2),
@@ -339,8 +431,8 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
               setState(() {
                 addToSavedList(
                   savedItem: UmapSaved(
-                    savedCategory: '',
-                    savedID: '',
+                    savedCategory: selectedCategory,
+                    savedID: element.id,
                     savedName: element["name"],
                     savedDescription: element["description"],
                     savedImgUrl: element["imageUrl"],
@@ -354,9 +446,8 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
-              ///todo: find category and id and put here
               documentID: element.id,
-              category: '',
+              category: selectedCategory,
               imgSrc: element["imageUrl"],
             ),
           ),
