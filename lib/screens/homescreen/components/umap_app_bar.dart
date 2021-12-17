@@ -25,13 +25,13 @@ class UmapAppBar extends StatelessWidget with PreferredSizeWidget {
       //     color: Theme.of(context).iconTheme.color,
       //   ),
       // ),
-      leading: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: SvgPicture.asset(
-          "assets/svg/umap_logo.svg",
-          height: 90,
-        ),
-      ),
+      // leading: Padding(
+      //   padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+      //   child: SvgPicture.asset(
+      //     "assets/svg/umap_logo.svg",
+      //     height: 90,
+      //   ),
+      // ),
       actions: [
         IconButton(
           splashColor: Colors.transparent,
@@ -53,7 +53,7 @@ class UmapAppBar extends StatelessWidget with PreferredSizeWidget {
         ),
         IconButton(
           icon: SvgPicture.asset(
-            "assets/svg/menu_icon.svg",
+            "assets/svg/menu_alt_icon.svg",
             color: Theme.of(context).iconTheme.color,
             //color: Colors.black,
           ),
