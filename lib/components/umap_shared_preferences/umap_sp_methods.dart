@@ -5,7 +5,7 @@ import 'dart:convert';
 List<UmapSaved> umapSPList = <UmapSaved>[];
 
 //Instantiating shared Prefs
-late SharedPreferences umapSharedPreferences;
+late final  SharedPreferences umapSharedPreferences;
 
 ///initialising Shared Preferences
 initUmapSharedPreferences() async {
