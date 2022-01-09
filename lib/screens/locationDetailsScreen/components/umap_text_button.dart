@@ -40,7 +40,7 @@ class UmapTextButton extends StatelessWidget {
                   child: CircularProgressIndicator.adaptive(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).iconTheme.color!,
+                      Colors.white,
                     ),
                     //valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
@@ -52,14 +52,17 @@ class UmapTextButton extends StatelessWidget {
                 children: [
                   Text(
                     buttonText,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText2!
+                        .copyWith(color: Colors.white),
                   ),
                   SizedBox(
                     width: getRelativeScreenWidth(context, 5),
                   ),
                   SvgPicture.asset(
                     buttonIconLink,
-                    color: Theme.of(context).iconTheme.color,
+                    color: Colors.white,
                     //height: 20,
                   ),
                 ],
