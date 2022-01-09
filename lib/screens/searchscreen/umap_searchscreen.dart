@@ -8,7 +8,6 @@ import 'package:u_map/components/umap_shared_preferences/umap_shared_preferences
 import 'package:u_map/components/umap_shared_preferences/umap_sp_methods.dart';
 import 'package:u_map/screens/findscreen/components/umap_list_item.dart';
 import 'package:u_map/screens/homescreen/components/umap_categories.dart';
-import 'package:u_map/screens/homescreen/components/umap_app_bar.dart';
 import 'package:u_map/screens/locationDetailsScreen/umap_location_details.dart';
 import 'package:u_map/screens/searchscreen/services/searchservice.dart';
 
@@ -21,8 +20,8 @@ class UmapSearchScreen extends StatefulWidget {
 
 class _UmapSearchScreenState extends State<UmapSearchScreen> {
   TextEditingController searchforRef = new TextEditingController();
-  var queryResultSet = [];
-  var tempSearchStore = [];
+  List<DocumentSnapshot>  queryResultSet = [];
+  List<DocumentSnapshot> tempSearchStore = [];
   String selectedCategory = 'administrative blocks';
   int selectedIndex = 0;
   List<bool> onSelected = [true, false, false];
@@ -67,12 +66,14 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
 
     //Runs the query when the first character is typed
     if (queryResultSet.length == 0 && searchTerm.length > 0) {
+
+  
       SearchService()
           .searchByName(
               searchField: capitaliseSearchTerm, category: searchCategory)
           .then((QuerySnapshot snapshot) {
         for (int i = 0; i < snapshot.docs.length; i++) {
-          queryResultSet.add(snapshot.docs[i].data());
+          queryResultSet.add(snapshot.docs[i]);
         }
         tempSearchStore = [];
         queryResultSet.forEach((element) {
@@ -95,24 +96,25 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
     //   });
     // }
 
-    return StreamBuilder(
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      ///Todo: make screens to show when searching or no searching
+    // return StreamBuilder(
+    //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    //   ///Todo: make screens to show when searching or no searching
+ 
 
-      if (searchTerm.length == 0) {
-        return Container(
-          child: Center(
-            child: Text(
-              "Search Something",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline1,
-            ),
-          ),
-        );
-      } else {
-        return buildSearchResult(snapshot);
-      }
-    });
+    //   if (searchTerm.length == 0) {
+    //     return Container(
+    //       child: Center(
+    //         child: Text(
+    //           "Search Something",
+    //           textAlign: TextAlign.center,
+    //           style: Theme.of(context).textTheme.headline1,
+    //         ),
+    //       ),
+    //     );
+    //   } else {
+    //     return buildSearchResult(snapshot,);
+    //   }
+    // });
   }
 
   @override
@@ -395,20 +397,20 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
     );
   }
 
-  Widget buildSearchResult(element) {
-    print("search result too is ${element["name"]}");
+  Widget buildSearchResult( DocumentSnapshot document) {
+    print("search result too is ${document["name"]}");
+
+   
     return UmapListItem(
       sourceLocation:
-          LatLng(element["location"].latitude, element["location"].longitude),
-      title: element["name"],
-      description: element["description"],
+          LatLng(document["location"].latitude, document["location"].longitude),
+      title: document["name"],
+      description: document["description"],
       firstIconSvgLink: isSaved
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
       secondIconSvgLink: "assets/svg/forward_icon.svg",
-
-      imgSrc: element["imageUrl"],
-      // imgSrc: "fake image url",
+      imgSrc: document["imageUrl"],
       firstIconOnPressed: isSaved
           ? () {
               Feedback.forTap(context);
@@ -416,13 +418,13 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
                 removeFromSavedList(
                     savedItem: UmapSaved(
                       savedCategory: selectedCategory,
-                      savedID: element.id,
-                      savedName: element["name"],
-                      savedDescription: element["description"],
+                      savedID: document.id,
+                      savedName: document["name"],
+                      savedDescription: document["description"],
                       // savedDistance: calcDistance!.toStringAsFixed(2),
-                      savedImgUrl: element["imageUrl"],
+                      savedImgUrl: document["imageUrl"],
                     ),
-                    locationID: element.id);
+                    locationID: document.id);
                 isSaved = false;
               });
             }
@@ -432,10 +434,10 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
                 addToSavedList(
                   savedItem: UmapSaved(
                     savedCategory: selectedCategory,
-                    savedID: element.id,
-                    savedName: element["name"],
-                    savedDescription: element["description"],
-                    savedImgUrl: element["imageUrl"],
+                    savedID: document.id,
+                    savedName: document["name"],
+                    savedDescription: document["description"],
+                    savedImgUrl: document["imageUrl"],
                   ),
                 );
                 isSaved = true;
@@ -446,9 +448,10 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
-              documentID: element.id,
+              ///todo: find the correct id and put here
+              documentID: document.id.toString(),
               category: selectedCategory,
-              imgSrc: element["imageUrl"],
+              imgSrc: document["imageUrl"],
             ),
           ),
         );
