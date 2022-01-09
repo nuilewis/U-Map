@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:u_map/components/umap_shared_preferences/theme_model.dart';
 import 'package:u_map/screens/aboutscreen/umap_aboutscreen.dart';
-import 'package:u_map/screens/savedscreen/umap_savedscreen.dart';
 import 'package:u_map/size_config.dart';
 
 class UmapDrawer extends Drawer {
