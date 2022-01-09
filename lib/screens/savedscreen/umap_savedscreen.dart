@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:u_map/components/umapDrawer.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_shared_preferences.dart';
 import 'package:u_map/components/umap_shared_preferences/umap_sp_methods.dart';
