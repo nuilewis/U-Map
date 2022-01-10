@@ -168,7 +168,7 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            "Oh, we can't find anything under this category",
+                            "There isn't anything under this category",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
@@ -229,7 +229,7 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            "Oh, there doesn't seem to be anything under this category",
+                            "There isn't anything under this category",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
@@ -293,7 +293,7 @@ class _UMapFindScreenState extends State<UMapFindScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            "Oh, there doesn't seem to be anything under this category",
+                            "There isn't anything under this category",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
