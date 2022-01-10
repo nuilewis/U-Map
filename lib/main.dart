@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:u_map/components/umap_shared_preferences/theme_model.dart';
-import 'package:u_map/screens/navigationscreen/umap_navscreen.dart';
 import 'package:u_map/theme.dart';
 import 'components/umap_bottom_nav_bar/umap_bottom_nav_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
