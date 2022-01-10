@@ -37,7 +37,7 @@ class _UmapLocationDetailsState extends State<UmapLocationDetails> {
   ///Todo: Make current location get actual current location
   //LatLng? currentLocation = LatLng(6.002342, 10.264345);
   LatLng? currentLocation;
-  late final Directions? directionInfo;
+  Directions? directionInfo;
   double? calcDistance;
   String? calDistanceString;
   late Widget distanceTextWidget;
