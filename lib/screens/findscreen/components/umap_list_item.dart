@@ -70,6 +70,7 @@ class UmapListItem extends StatelessWidget {
                       children: [
                         Spacer(),
                         IconButton(
+                          splashColor: Colors.transparent,
                           icon: SvgPicture.asset(
                             firstIconSvgLink,
                             color: Theme.of(context).iconTheme.color,
@@ -78,6 +79,7 @@ class UmapListItem extends StatelessWidget {
                           onPressed: firstIconOnPressed,
                         ),
                         IconButton(
+                          splashColor: Colors.transparent,
                           icon: SvgPicture.asset(
                             secondIconSvgLink,
                             color: Theme.of(context).iconTheme.color,
