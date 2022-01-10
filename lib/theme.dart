@@ -44,7 +44,7 @@ ThemeData lightThemeData(BuildContext context) {
 ThemeData darkThemeData(BuildContext context) {
   return ThemeData(
       appBarTheme: appBarTheme,
-      primaryColor: cPrimaryColor.withOpacity(.3),
+      primaryColor: cPrimaryColor,
       primaryColorLight: cPrimaryColorLight.withOpacity(.3),
       primaryColorDark: cPrimaryColorDark,
       scaffoldBackgroundColor: cBlackIconColor,
