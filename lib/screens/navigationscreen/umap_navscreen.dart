@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:u_map/components/umapDrawer.dart';
 import 'package:u_map/components/umap_directions/directions_model.dart';
@@ -34,7 +35,13 @@ class _UMapNavigationScreenState extends State<UMapNavigationScreen> {
     Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: UmapAppBar(),
+      appBar: UmapAppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: SvgPicture.asset("assets/svg/back_icon.svg", color: Theme.of(context).iconTheme.color,)),
+      ),
       endDrawer: UmapDrawer(),
       body: Stack(
         children: [
