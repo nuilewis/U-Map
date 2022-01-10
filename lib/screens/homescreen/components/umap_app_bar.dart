@@ -3,13 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:u_map/screens/searchscreen/umap_searchscreen.dart';
 import 'package:u_map/size_config.dart';
 
-import 'umap_searchbar.dart';
-
 class UmapAppBar extends StatelessWidget with PreferredSizeWidget {
   final Size preferredSize;
+  final Widget? leading;
 
   UmapAppBar({
     this.preferredSize = const Size.fromHeight(80),
+    this.leading,
     Key? key,
   }) : super(key: key);
 
@@ -18,6 +18,7 @@ class UmapAppBar extends StatelessWidget with PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       toolbarHeight: preferredSize.height,
+      leading: leading ?? null,
       // leading: Padding(
       //   padding: const EdgeInsets.only(left: 20),
       //   child: SvgPicture.asset(
