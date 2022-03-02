@@ -20,23 +20,30 @@ class _UmapCategoriesState extends State<UmapCategories> {
   late final Stream<QuerySnapshot> umapFirestoreStream;
   late LatLng markerLoc;
   int selectedIndex = 0;
-  List<bool> onSelected = [true, false, false];
-  String firestoreCategory = "administrative blocks";
+  List<bool> onSelected = [true, false, false, false, false, false];
+  String firestoreCategory = "classes";
   late Widget streamToShow;
   late List<Widget> streams = [];
   List<String> categoryNames = [
     "Classes",
-    "Administrative\nBlocks",
+    "Administrative Blocks",
     "Offices",
+    "Amhpis",
+    "Laboratories",
+    "Leisure",
   ];
-  List<Color> categoryColors = [
-    Color(0xFFFAE788),
-    Color(0xFF68E8D5),
-    Color(0xFFFA9595),
-  ];
-  //Color categoryColors = Color(0xFF85C9F6);
+  // List<Color> categoryColors = [
+  //   Color(0xFFFAE788),
+  //   Color(0xFF68E8D5),
+  //   Color(0xFFFA9595),
+  // ];
+  Color categoryColors = Color(0xFF85C9F6);
+
   //Color categoryColors = cSecondaryColor;
   List<String> categoryIconLinks = [
+    "assets/svg/home_icon.svg",
+    "assets/svg/home_icon.svg",
+    "assets/svg/home_icon.svg",
     "assets/svg/home_icon.svg",
     "assets/svg/home_icon.svg",
     "assets/svg/home_icon.svg",
@@ -45,6 +52,9 @@ class _UmapCategoriesState extends State<UmapCategories> {
     "classes",
     "administrative blocks",
     "offices",
+    "amhpi",
+    "labs",
+    "leisure",
   ];
   List<bool> isSaved = [];
 
@@ -52,12 +62,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
   initState() {
     super.initState();
     initUmapSharedPreferences();
-    // streamToShow = classesStream();
-    // streams = [
-    //   classesStream(),
-    //   adminStream(),
-    //   officesStream(),
-    // ];
+
     umapFirestoreStream = FirebaseFirestore.instance
         .collection("umap_bamenda")
         .doc("umap_uba_ref")
@@ -97,8 +102,8 @@ class _UmapCategoriesState extends State<UmapCategories> {
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  //itemExtent: 100,
-                  itemCount: 3,
+                  // itemExtent: 10,
+                  itemCount: umapCategories.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                         onTap: () {
@@ -106,7 +111,14 @@ class _UmapCategoriesState extends State<UmapCategories> {
                           HapticFeedback.lightImpact();
 
                           selectedIndex = index;
-                          onSelected = [false, false, false];
+                          onSelected = [
+                            false,
+                            false,
+                            false,
+                            false,
+                            false,
+                            false,
+                          ];
                           onSelected[index] = true;
                           setState(() {
                             firestoreCategory = umapCategories[index];
@@ -116,7 +128,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
                         child: CategoryItem(
                           onSelected: onSelected[index],
                           categoryName: categoryNames[index],
-                          color: categoryColors[index],
+                          color: categoryColors,
                           categoryIconLink: categoryIconLinks[index],
                         ));
                   },
@@ -157,17 +169,20 @@ class _StreamToShowState extends State<StreamToShow> {
     required int index,
     required String category,
   }) {
+    Map<String, dynamic> documentMap =
+        document[widget.firestoreCategory][index];
+
     for (int i = 0; i < umapSPList.length; i++) {
       ///Check if is saved
-      if (umapSPList[i].savedID == document["id"][index]) {
+      if (umapSPList[i].savedID == documentMap["id"]) {
         isSaved[index] = true;
       }
     }
 
     return UmapListItem(
-      title: document["name"][index],
-      description: document["description"][index],
-      imgSrc: document["imageUrl"][index],
+      title: documentMap["name"],
+      description: documentMap["description"],
+      imgSrc: documentMap["imageUrl"],
       firstIconSvgLink: isSaved[index]
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
@@ -180,12 +195,12 @@ class _StreamToShowState extends State<StreamToShow> {
                 removeFromSavedList(
                     savedItem: UmapSaved(
                       savedCategory: widget.firestoreCategory,
-                      savedID: document["id"][index],
-                      savedName: document["name"][index],
-                      savedDescription: document["description"][index],
-                      savedImgUrl: document["imageUrl"][index],
+                      savedID: documentMap["id"],
+                      savedName: documentMap["name"],
+                      savedDescription: documentMap["description"],
+                      savedImgUrl: documentMap["imageUrl"],
                     ),
-                    locationID: document["id"][index]);
+                    locationID: documentMap["id"]);
 
                 isSaved[index] = false;
               });
@@ -198,10 +213,10 @@ class _StreamToShowState extends State<StreamToShow> {
                 addToSavedList(
                   savedItem: UmapSaved(
                     savedCategory: category,
-                    savedID: document["id"][index],
-                    savedName: document["name"][index],
-                    savedDescription: document["description"][index],
-                    savedImgUrl: document["imageUrl"][index],
+                    savedID: documentMap["id"],
+                    savedName: documentMap["name"],
+                    savedDescription: documentMap["description"],
+                    savedImgUrl: documentMap["imageUrl"],
                   ),
                 );
 
@@ -217,8 +232,8 @@ class _StreamToShowState extends State<StreamToShow> {
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
               category: widget.firestoreCategory,
-              documentID: document["id"][index],
-              imgSrc: document["imageUrl"][index],
+              documentID: documentMap["id"],
+              imgSrc: documentMap["imageUrl"],
             ),
           ),
         );
@@ -261,13 +276,14 @@ class _StreamToShowState extends State<StreamToShow> {
               DocumentSnapshot umapSourceDocuments = snapshot.data!.docs[0];
 
               ///0 bcs there is only 1 document in the collection
-              if (umapSourceDocuments["id"].isNotEmpty) {
+              if (umapSourceDocuments[widget.firestoreCategory].isNotEmpty) {
                 return ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    itemExtent: getRelativeScreenHeight(context, 195),
-                    itemCount: umapSourceDocuments["id"].length,
+                    // itemExtent: getRelativeScreenHeight(context, 195),
+                    itemCount:
+                        umapSourceDocuments[widget.firestoreCategory].length,
                     itemBuilder: (context, index) {
                       //Making all indexes of isSaved false
                       isSaved.add(false);
@@ -311,44 +327,37 @@ class CategoryItem extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
+    //Size screenSize = MediaQuery.of(context).size;
     return AnimatedContainer(
       duration: Duration(milliseconds: 250),
       curve: Curves.easeOut,
       margin: EdgeInsets.symmetric(
         horizontal: getRelativeScreenWidth(context, 10),
       ),
+      padding: EdgeInsets.symmetric(
+          horizontal: getRelativeScreenWidth(context, 40), vertical: 0),
       decoration: BoxDecoration(
-        color: onSelected ? color : Theme.of(context).cardColor,
+        color: onSelected
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).primaryColor.withOpacity(.2),
         borderRadius: BorderRadius.all(
-          Radius.circular(20),
+          Radius.circular(50),
         ),
       ),
-      height: getRelativeScreenHeight(context, 100),
-      width: screenSize.width * .5,
-      child: Stack(
-        children: [
-          // ///Icon
-          // Positioned(
-          //   top: 10,
-          //   right: 10,
-          //   child: SvgPicture.asset(categoryIconLink,
-          //       color: onSelected ? Colors.black : color),
-          // ),
-          Positioned(
-            bottom: 10,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: getRelativeScreenWidth(context, 15)),
-              child: Text(categoryName,
-                  style: onSelected
-                      ? Theme.of(context).textTheme.headline2?.copyWith(
-                            color: Color(0xFF101011),
-                          )
-                      : Theme.of(context).textTheme.headline2),
-            ),
-          ),
-        ],
+      child: Center(
+        child: Text(
+          categoryName,
+          style: onSelected
+              ? Theme.of(context).textTheme.headline2?.copyWith(
+                    fontSize: 16,
+                    //color: Color(0xFF101011)
+                    color: Colors.white,
+                  )
+              : Theme.of(context).textTheme.headline2?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+        ),
       ),
     );
   }
