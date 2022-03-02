@@ -14,14 +14,10 @@ class PopularPlaces extends StatefulWidget {
 }
 
 class _PopularPlacesState extends State<PopularPlaces> {
-  final Stream<QuerySnapshot> umapFirestoreStream = FirebaseFirestore.instance
-      .collection("umap_bamenda")
-      .doc("umap_uba_ref")
-      .collection("administrative blocks")
-      .snapshots();
-
   late final LatLng markerLoc;
   List<bool> isSaved = [];
+  String category = "administrative blocks";
+  // String category = "classes";
 
   @override
   initState() {
@@ -34,17 +30,19 @@ class _PopularPlacesState extends State<PopularPlaces> {
       required DocumentSnapshot document,
       required int index,
       required String category}) {
+    Map<String, dynamic> documentMap = document[category][index];
+
     for (int i = 0; i < umapSPList.length; i++) {
       ///Check if is saved
-      if (umapSPList[i].savedID == document["id"][index]) {
+      if (umapSPList[i].savedID == documentMap["id"]) {
         isSaved[index] = true;
       }
     }
 
     ///Todo: Add code to find the most popular locations
     return PopularPlacesListItem(
-      title: document["name"][index],
-      imageSrc: document["imageUrl"][index],
+      title: documentMap["name"],
+      imageSrc: documentMap["imageUrl"],
       saveIconLink: isSaved[index]
           ? "assets/svg/heart_icon_filled.svg"
           : "assets/svg/heart_icon.svg",
@@ -56,11 +54,11 @@ class _PopularPlacesState extends State<PopularPlaces> {
                 removeFromSavedList(
                   savedItem: UmapSaved(
                       savedCategory: category,
-                      savedID: document["id"][index],
-                      savedName: document["name"][index],
-                      savedDescription: document["description"][index],
-                      savedImgUrl: document["imageUrl"][index]),
-                  locationID: document["id"][index],
+                      savedID: documentMap["id"],
+                      savedName: documentMap["name"],
+                      savedDescription: documentMap["description"],
+                      savedImgUrl: documentMap["imageUrl"]),
+                  locationID: documentMap["id"],
                 );
                 isSaved[index] = false;
               });
@@ -72,10 +70,10 @@ class _PopularPlacesState extends State<PopularPlaces> {
                 addToSavedList(
                   savedItem: UmapSaved(
                       savedCategory: category,
-                      savedID: document["id"][index],
-                      savedName: document["name"][index],
-                      savedDescription: document["description"][index],
-                      savedImgUrl: document["imageUrl"][index]),
+                      savedID: documentMap["id"],
+                      savedName: documentMap["name"],
+                      savedDescription: documentMap["description"],
+                      savedImgUrl: documentMap["imageUrl"]),
                 );
                 isSaved[index] = true;
               });
@@ -88,8 +86,8 @@ class _PopularPlacesState extends State<PopularPlaces> {
           MaterialPageRoute(
             builder: (context) => UmapLocationDetails(
               category: category,
-              documentID: document["id"][index],
-              imgSrc: document["imageUrl"][index],
+              documentID: documentMap["id"],
+              imgSrc: documentMap["imageUrl"],
             ),
           ),
         );
@@ -125,7 +123,11 @@ class _PopularPlacesState extends State<PopularPlaces> {
               //left: getRelativeScreenHeight(context, 20),
             ),
             child: StreamBuilder(
-              stream: umapFirestoreStream,
+              stream: FirebaseFirestore.instance
+                  .collection("umap_bamenda")
+                  .doc("umap_uba_ref")
+                  .collection(category)
+                  .snapshots(),
               builder: (
                 BuildContext context,
                 AsyncSnapshot<QuerySnapshot> snapshot,
@@ -140,26 +142,41 @@ class _PopularPlacesState extends State<PopularPlaces> {
                       ),
                     );
                   default:
-                    List umapSourceDocumentsList = snapshot.data!.docs;
-                    var umapSourceDocuments = umapSourceDocumentsList[0];
-                    return Container(
-                      height: getRelativeScreenHeight(context, 240),
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          //itemExtent: getRelativeScreenWidth(context, 240),
-                          itemCount: umapSourceDocuments["id"].length,
-                          itemBuilder: (context, index) {
-                            //Making all indexes of isSaved false
-                            isSaved.add(false);
+                    DocumentSnapshot umapSourceDocuments =
+                        snapshot.data!.docs[0];
 
-                            return buildPopularPlacesList(
-                                context: context,
-                                document: umapSourceDocuments,
-                                index: index,
-                                category: "administrative blocks");
-                          }),
-                    );
+                    ///Because there is only 1 document in the collection
+                    if (umapSourceDocuments[category].isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Text(
+                            "There isn't anything under this category",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Container(
+                        height: getRelativeScreenHeight(context, 240),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            //itemExtent: getRelativeScreenWidth(context, 240),
+                            itemCount: umapSourceDocuments[category].length,
+                            itemBuilder: (context, index) {
+                              //Making all indexes of isSaved false
+                              isSaved.add(false);
+
+                              return buildPopularPlacesList(
+                                  context: context,
+                                  document: umapSourceDocuments,
+                                  index: index,
+                                  category: category);
+                            }),
+                      );
+                    }
                 }
               },
             ),
