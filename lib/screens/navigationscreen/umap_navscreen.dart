@@ -40,7 +40,10 @@ class _UMapNavigationScreenState extends State<UMapNavigationScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: SvgPicture.asset("assets/svg/back_icon.svg", color: Theme.of(context).iconTheme.color,)),
+            icon: SvgPicture.asset(
+              "assets/svg/back_icon.svg",
+              color: Theme.of(context).iconTheme.color,
+            )),
       ),
       endDrawer: UmapDrawer(),
       body: Stack(
@@ -118,43 +121,55 @@ class _UMapNavigationScreenState extends State<UMapNavigationScreen> {
                                       height:
                                           getRelativeScreenHeight(context, 10),
                                     ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                            widget.directionInfo!.totalDistance,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline1!
-                                                .copyWith(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.normal,
-                                                )),
-                                        SizedBox(
-                                          width: getRelativeScreenWidth(
-                                              context, 20),
-                                        ),
 
-                                        ///Divider container
-                                        Container(
-                                          color: Theme.of(context).primaryColor,
-                                          height: 40,
-                                          width: 2,
-                                        ),
-                                        SizedBox(
-                                          width: getRelativeScreenWidth(
-                                              context, 20),
-                                        ),
-                                        Text(
-                                            widget.directionInfo!.totalDuration,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline1!
-                                                .copyWith(
-                                                    fontSize: 24,
-                                                    fontWeight:
-                                                        FontWeight.normal)),
-                                      ],
+                                    ///Time and distance
+                                    Text(widget.directionInfo!.totalDistance,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1!
+                                            .copyWith(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.normal,
+                                            )),
+                                    SizedBox(
+                                      height:
+                                          getRelativeScreenWidth(context, 10),
+                                    ),
+
+                                    ///Divider container
+                                    Container(
+                                      color: Theme.of(context).primaryColor,
+                                      height: 2,
+                                      width: 40,
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          getRelativeScreenWidth(context, 10),
+                                    ),
+                                    Text(widget.directionInfo!.totalDuration,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1!
+                                            .copyWith(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.normal)),
+
+                                    ///Travel Mode Text
+                                    SizedBox(
+                                      height:
+                                          getRelativeScreenHeight(context, 10),
+                                    ),
+                                    Text(
+                                      "Travel Mode: Walking",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .iconTheme
+                                                .color!
+                                                .withOpacity(.7),
+                                          ),
                                     ),
                                   ],
                                 ),
