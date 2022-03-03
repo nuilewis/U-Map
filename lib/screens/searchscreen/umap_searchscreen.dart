@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,26 +21,36 @@ class UmapSearchScreen extends StatefulWidget {
 
 class _UmapSearchScreenState extends State<UmapSearchScreen> {
   TextEditingController searchforRef = new TextEditingController();
-  List<DocumentSnapshot>  queryResultSet = [];
+  List<DocumentSnapshot> queryResultSet = [];
   List<DocumentSnapshot> tempSearchStore = [];
   String selectedCategory = 'administrative blocks';
   int selectedIndex = 0;
-  List<bool> onSelected = [true, false, false];
+  List<bool> onSelected = [true, false, false, false, false, false];
   late Widget resultToDisplay;
 
   List<String> categoryNames = [
-    "Administrative\nBlocks",
+    "Administrative Blocks",
     "Offices",
     "Classes",
+    "Amphis",
+    "Laboratories",
+    "Leisures",
   ];
 
+  String searchPrompt = "Search Something";
   List<Color> categoryColors = [
     Color(0xFFFAE788),
     Color(0xFF68E8D5),
     Color(0xFFFA9595),
+    Color(0xFFFA9595),
+    Color(0xFFFA9595),
+    Color(0xFFFA9595),
   ];
 
   List<String> categoryIconLinks = [
+    "assets/svg/home_icon.svg",
+    "assets/svg/home_icon.svg",
+    "assets/svg/home_icon.svg",
     "assets/svg/home_icon.svg",
     "assets/svg/home_icon.svg",
     "assets/svg/home_icon.svg",
@@ -49,6 +60,9 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
     "administrative blocks",
     "offices",
     "classes",
+    "amphi",
+    "labs",
+    "leisure",
   ];
 
   bool isSaved = false;
@@ -66,8 +80,6 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
 
     //Runs the query when the first character is typed
     if (queryResultSet.length == 0 && searchTerm.length > 0) {
-
-  
       SearchService()
           .searchByName(
               searchField: capitaliseSearchTerm, category: searchCategory)
@@ -99,7 +111,6 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
     // return StreamBuilder(
     //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
     //   ///Todo: make screens to show when searching or no searching
- 
 
     //   if (searchTerm.length == 0) {
     //     return Container(
@@ -125,11 +136,17 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
           alignment: Alignment.center,
           child: Padding(
             padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * .3, bottom: 20),
+                top: MediaQuery.of(context).size.height * .3,
+                bottom: 20,
+                left: 20,
+                right: 20),
             child: Text(
-              "Search Something",
+              searchPrompt,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline1,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline1!
+                  .copyWith(fontSize: 20, fontWeight: FontWeight.normal),
             ),
           ),
         );
@@ -321,17 +338,26 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         //itemExtent: 100,
-                        itemCount: 3,
+                        itemCount: umapCategories.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                               onTap: () {
                                 Feedback.forTap(context);
                                 HapticFeedback.lightImpact();
                                 selectedIndex = index;
-                                onSelected = [false, false, false];
+                                onSelected = [
+                                  false,
+                                  false,
+                                  false,
+                                  false,
+                                  false,
+                                  false
+                                ];
                                 onSelected[index] = true;
                                 setState(() {
                                   selectedCategory = umapCategories[index];
+                                  searchPrompt =
+                                      "Search ${categoryNames[index]}";
                                 });
                               },
                               child: CategoryItem(
@@ -397,10 +423,9 @@ class _UmapSearchScreenState extends State<UmapSearchScreen> {
     );
   }
 
-  Widget buildSearchResult( DocumentSnapshot document) {
+  Widget buildSearchResult(DocumentSnapshot document) {
     print("search result too is ${document["name"]}");
 
-   
     return UmapListItem(
       sourceLocation:
           LatLng(document["location"].latitude, document["location"].longitude),
