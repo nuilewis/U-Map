@@ -28,7 +28,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
     "Classes",
     "Administrative Blocks",
     "Offices",
-    "Amhpis",
+    "Amphis",
     "Laboratories",
     "Leisure",
   ];
@@ -52,7 +52,7 @@ class _UmapCategoriesState extends State<UmapCategories> {
     "classes",
     "administrative blocks",
     "offices",
-    "amhpi",
+    "amphi",
     "labs",
     "leisure",
   ];
